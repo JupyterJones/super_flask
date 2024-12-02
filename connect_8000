@@ -1,0 +1,1 @@
+cd /mnt/HDD500/TENSORFLOW/Models && python -m http.server 8000
