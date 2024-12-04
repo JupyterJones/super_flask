@@ -1,0 +1,114 @@
+import gc
+from PIL import Image, ImageDraw, ImageFont
+import os
+from moviepy.editor import ImageSequenceClip
+import textwrap
+
+def cleanup_previous_frames(directory, prefix="frame_"):
+    """Delete all images matching the prefix in the specified directory."""
+    if not os.path.exists(directory):
+        os.makedirs(directory)  # Create directory if it doesn't exist
+
+    # Remove old frames
+    for file in os.listdir(directory):
+        if file.startswith(prefix) and file.endswith((".jpg", ".png")):
+            os.remove(os.path.join(directory, file))
+    
+    # Optionally delete the video file if it exists
+    for file in os.listdir(directory):
+        if file.endswith((".mp4", ".avi")):
+            os.remove(os.path.join(directory, file))
+
+def wrap_text(text, font, max_width):
+    """Wrap text to fit within the max_width based on the font."""
+    wrapped_lines = []
+    for line in text.splitlines():
+        words = line.split()
+        current_line = ""
+        for word in words:
+            test_line = f"{current_line} {word}".strip()
+            if font.getbbox(test_line)[2] <= max_width:  # Check text width
+                current_line = test_line
+            else:
+                wrapped_lines.append(current_line)
+                current_line = word
+        if current_line:  # Append any leftover text
+            wrapped_lines.append(current_line)
+    return wrapped_lines
+
+def create_text_image(text, font_path, font_size, image_width, image_height, y_offset):
+    """Create an image with part of the text, starting from y_offset."""
+    font = ImageFont.truetype(font_path, font_size)
+    wrapped_lines = wrap_text(text, font, image_width - 20)  # Subtract padding for margins
+
+    # Calculate the total text height
+    line_heights = [font.getbbox(line)[3] - font.getbbox(line)[1] for line in wrapped_lines]
+    total_text_height = sum(line_heights)
+
+    # Create the image only for the current visible portion of text
+    image = Image.new('RGB', (image_width, image_height), color=(0, 0, 0))
+    draw = ImageDraw.Draw(image)
+
+    # Draw text line by line
+    y_offset_image = 0
+    for line, line_height in zip(wrapped_lines, line_heights):
+        if y_offset_image >= y_offset and y_offset_image < y_offset + image_height:
+            draw.text((10, y_offset_image - y_offset), line, font=font, fill=(255, 255, 255))  # Adjust padding
+        y_offset_image += line_height
+
+    return image
+
+def generate_frame_sequence(text, font_path, font_size, image_width=1366, image_height=768, speed=1):
+    """Generate frames by scrolling the text."""
+    # Create the wrapped text image first to get total text height
+    font = ImageFont.truetype(font_path, font_size)
+    wrapped_lines = wrap_text(text, font, image_width - 20)
+    line_heights = [font.getbbox(line)[3] - font.getbbox(line)[1] for line in wrapped_lines]
+    total_text_height = sum(line_heights)
+
+    # Ensure text height is greater than the video height
+    if total_text_height <= image_height:
+        print("Text is too short to scroll.")
+        return
+
+    # Generate frames on the fly by cropping the tall image
+    for y_offset_start in range(0, total_text_height - image_height + 1, speed):
+        yield create_text_image(text, font_path, font_size, image_width, image_height, y_offset_start)
+
+def create_scrolling_video(text, font_path, font_size, output_video_filename, image_width=1366, image_height=768, fps=24, speed=1):
+    """Create a scrolling video from the text."""
+    output_dir = os.path.dirname(output_video_filename)
+    cleanup_previous_frames(output_dir)  # Clean up old frames
+
+    # Create a generator for the frames
+    frame_generator = generate_frame_sequence(text, font_path, font_size, image_width, image_height, speed)
+
+    image_sequence_paths = []
+    for idx, frame in enumerate(frame_generator):
+        frame_path = os.path.join(output_dir, f"frame_{idx:05d}.jpg")
+        frame.save(frame_path)
+        image_sequence_paths.append(frame_path)
+
+        # Cleanup after every 250 frames to free memory
+        if idx % 250 == 0:
+            gc.collect()
+
+    # Create a video from images
+    clip = ImageSequenceClip(image_sequence_paths, fps=fps)
+    clip.write_videofile(output_video_filename, codec="libx264")
+
+    # Cleanup after video is generated
+    for path in image_sequence_paths:
+        os.remove(path)
+
+    # Collect unused objects and trigger garbage collection to free memory
+    gc.collect()
+
+# Example usage
+if __name__ == "__main__":
+    text = open("first.py", "r").read()  # Load the text (e.g., Python script)
+    font_path = "static/fonts/MerriweatherSans-Bold.ttf"  # Replace with your font path
+    font_size = 20
+    output_video_filename = "static/output_text_images/scrolling_text.mp4"  # Save to static directory
+
+    create_scrolling_video(text, font_path, font_size, output_video_filename)

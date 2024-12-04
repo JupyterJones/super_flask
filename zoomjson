@@ -1,0 +1,108 @@
+from flask import Flask, render_template, request, jsonify, url_for
+import os
+import cv2
+import json
+
+app = Flask(__name__)
+
+# Default JSON data for animation if none is provided
+default_animation_data = [
+    {"zoom": 1.0, "pan": [0, 0]},
+    {"zoom": 1.0, "pan": [0, 0]},
+    {"zoom": 1.2, "pan": [0.1, 0.1]},
+    {"zoom": 1.5, "pan": [0.2, 0.2]},
+    {"zoom": 2.0, "pan": [0.4, 0.4]},
+    {"zoom": 2.5, "pan": [0.6, 0.6]},
+    {"zoom": 3.0, "pan": [0.8, 0.8]},
+    {"zoom": 2.5, "pan": [0.6, 0.6]},
+    {"zoom": 1.5, "pan": [0.2, 0.2]},
+    {"zoom": 1.0, "pan": [0, 0]}
+]
+
+@app.route('/')
+def index():
+    # Retrieve image filenames from static/archived-store
+    image_folder = 'static/archived-store'
+    images = [file for file in os.listdir(image_folder) if file.endswith(('.jpg', '.jpeg', '.png'))]
+
+    # Pass default animation data as JSON
+    return render_template('json_zoom.html', 
+                           images=images, 
+                           default_animation_data=json.dumps(default_animation_data))
+
+
+@app.route('/create_animation', methods=['POST'])
+def create_animation():
+    try:
+        data = request.get_json()
+        image_name = data.get('image')
+        animation_data = data.get('animation_data', [])
+
+        if not isinstance(animation_data, list) or len(animation_data) == 0:
+            return jsonify({"error": "Invalid animation data."}), 400
+
+        # Paths
+        image_path = os.path.join('static', 'archived-store', image_name)
+        output_video_path = os.path.join("static/temp_exp", 'output.mp4')
+
+        # Create the zoom and pan animation
+        create_zoom_pan_animation(image_path, animation_data, output_video_path)
+
+        return jsonify({"message": "Video created successfully", "video_path": url_for('static', filename='output.mp4')})
+    
+    except Exception as e:
+        print(f"Error in create_animation: {str(e)}")
+        return jsonify({"error": "An error occurred while creating the animation."}), 500
+
+def create_zoom_pan_animation(image_path, animation_data, output_video_path, interpolation_steps=60, frame_rate=10.0):
+    # Load the image
+    image = cv2.imread(image_path)
+    if image is None:
+        print(f"Error: Unable to load image at {image_path}")
+        return
+
+    # Get image dimensions
+    original_height, original_width = image.shape[:2]
+
+    # Set the output frame dimensions
+    output_width, output_height = 512, 768
+
+    # Video writer for mp4 format
+    fourcc = cv2.VideoWriter_fourcc(*'mp4v')
+    video_writer = cv2.VideoWriter(output_video_path, fourcc, frame_rate, (output_width, output_height))
+
+    # Loop through keyframes and interpolate between them
+    frames = []
+    for i in range(len(animation_data) - 1):
+        start_frame = animation_data[i]
+        end_frame = animation_data[i + 1]
+
+        # Interpolate between start and end frames
+        for step in range(interpolation_steps):
+            zoom = start_frame["zoom"] + (end_frame["zoom"] - start_frame["zoom"]) * (step / interpolation_steps)
+            pan_x = start_frame["pan"][0] + (end_frame["pan"][0] - start_frame["pan"][0]) * (step / interpolation_steps)
+            pan_y = start_frame["pan"][1] + (end_frame["pan"][1] - start_frame["pan"][1]) * (step / interpolation_steps)
+
+            crop_width = int(original_width / zoom)
+            crop_height = int(original_height / zoom)
+
+            x_offset = int(pan_x * (original_width - crop_width))
+            y_offset = int(pan_y * (original_height - crop_height))
+
+            x_offset = max(0, min(x_offset, original_width - crop_width))
+            y_offset = max(0, min(y_offset, original_height - crop_height))
+
+            cropped_image = image[y_offset:y_offset + crop_height, x_offset:x_offset + crop_width]
+            resized_image = cv2.resize(cropped_image, (output_width, output_height))
+
+            frames.append(resized_image)
+
+    for frame in frames:
+        video_writer.write(frame)
+
+    video_writer.release()
+    print(f"Video saved successfully at {output_video_path}")
+
+# Running the Flask app
+if __name__ == '__main__':
+    app.run(debug=True)

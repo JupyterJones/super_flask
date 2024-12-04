@@ -1,0 +1,80 @@
+66033  ps aux | grep baloo
+66034  balooctl status
+66035  rm /home/jack/.local/share/baloo/index
+66036  natron
+66037  sudo snap install natron
+66038  natron
+66039  python mk_prompt.py
+66040  python mk_prompts.py
+66041  sub mk_prompts.py
+66042  python mk_prompts.py
+66043  htop
+66044  ls -rant
+66045  cat generated_prompts.txt
+66046  sub generated_prompts.txt
+66047  rm generated_prompts.txt
+66048  cat generated_prompts.txt
+66049  sub generated_prompts.txt
+66050  cb
+66051  blender --python trippy_tunnel.py
+66052  blender --python sphere.py
+66053  blender --python planes_rotation_y_axis.py
+66054  blender --python blender-python-examples-master/planes_rotation_x_axis.py
+66055  cb
+66056  blender --python blender-python-examples-master/planes_rotation_x_axis.py
+66057  cb
+66058  blender --python blender-python-examples-master/planes_rotation_x_axis.py
+66059  free
+66060  lsbin
+66061  free-cache
+66062  ls /tmp
+66063  ls -r /tmp
+66064  du /tmp
+66065  sudo du /tmp
+66066  cb
+66067  python app.py
+66068  cp /home/jack/Desktop/Flask_Make_Art/logit.py .
+66069  cb
+66070  python app.py
+66071  cp /home/jack/Desktop/Flask_Make_Art/square_transition .
+66072  cp /home/jack/Desktop/Flask_Make_Art/Wav2Lip-master .
+66073  cp -a /home/jack/Desktop/Flask_Make_Art/Wav2Lip-master .
+66074  nano .gitignore
+66075  git add .
+66076  git commit -m "created empty directories"
+66077  git push
+66078  git lfs track "static/balacoon/en_us_hifi_jets_cpu.addon"
+66079  git reset HEAD static/balacoon/en_us_hifi_jets_cpu.addon
+66080  git rm --cached static/balacoon/en_us_hifi_jets_cpu.addon
+66081  git add static/balacoon/en_us_hifi_jets_cpu.addon
+66082  git commit -m "Track large file with Git LFS"
+66083  git push origin master
+66084  git lfs untrack "static/balacoon/en_us_hifi_jets_cpu.addon"
+66085  sudo apt install bfg
+66086  git reflog expire --expire=now --all
+66087  git gc --prune=now --aggressive
+66088  git push origin --force
+66089  wget https://repo1.maven.org/maven2/com/madgag/bfg/1.14.0/bfg-1.14.0.jar
+66090  java -jar bfg-1.14.0.jar --help
+66091  java -jar bfg-1.14.0.jar --delete-files "static/balacoon/en_us_hifi_jets_cpu.addon" .
+66092  java -jar bfg-1.14.0.jar --delete-files "en_us_hifi_jets_cpu.addon" .
+66093  git reflog expire --expire=now --all && git gc --prune=now --aggressive
+66094  git push origin --force
+66095  git clone git@github.com:JupyterJones/super_flask.git
+66096  cd super_flask
+66097  git add .
+66098  git commit -m "update with images and video"
+66099  git push
+66100  nano .gitignore 
+66101  git rm --cached static/balacoon/en_us_hifi_jets_cpu.addon
+66102  git commit -m "Remove large file from Git history"
+66103  wget https://repo1.maven.org/maven2/com/madgag/bfg/1.14.0/bfg-1.14.0.jar
+66104  java -jar bfg-1.14.0.jar --delete-files "en_us_hifi_jets_cpu.addon" .
+66105  git reflog expire --expire=now --all && git gc --prune=now --aggressive
+66106  git push origin --force
+66107  git lfs ls-files
+66108  git add .gitignore
+66109  git commit -m " .gitignore"
+66110  git push
+66111  cb
+66112  history 80 >>git.history

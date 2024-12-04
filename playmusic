@@ -1,0 +1,19 @@
+#!/bin/bash
+
+#MUSIC_DIR="/home/jack/Desktop/HDD500/collections/music_long/"
+#MUSIC_DIR="/home/jack/Desktop/HDD500/collections/MUSIC/"
+#MUSIC_DIR="/home/jack/Desktop/Flask_Make_Art/static/voice/"
+MUSIC_DIR="/home/jack/Desktop/Flask_Make_Art/static/sound4live/"
+
+
+# Infinite loop to keep playing random mp3 files
+while true; do
+    # Find all mp3 files and pick one at random
+    RANDOM_MP3=$(find "$MUSIC_DIR" -type f -name "*.mp3" | shuf -n 1)
+
+    # Play the random mp3 using mpg123
+    mpg123 -v "$RANDOM_MP3"
+
+    # Sleep for a second before playing the next track (optional)
+    sleep 1
+done

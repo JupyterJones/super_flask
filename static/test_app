@@ -1,0 +1,208 @@
+#!/home/jack/miniconda3/envs/cloned_base/bin/python
+# app.py
+from flask import Flask, request, render_template, redirect, url_for, send_from_directory, Response, send_file
+from FLASKinit import create_basic_flask_tree
+import os 
+import sys
+import datetime
+import sqlite3
+from PIL import Image
+import io
+import base64
+import cv2
+app = Flask(__name__)
+app.use_static_path = True
+debug_directory = "Logs"
+if not os.path.exists('static/text
+otes_app.txt'):
+    with open('static/text
+otes_app.txt', 'a') as f:
+        f.write('')
+    f.close()
+
+def logit(argvs):
+    argv = argvs   
+    log_file = debug_directory+"/app_log.txt"  # Replace with the actual path to your log file
+    timestamp = datetime.datetime.now().strftime("%A_%b-%d-%Y_%H-%M-%S")
+    with open(log_file, "a") as log:
+        log.write(f"{timestamp}: {argv}\n")
+
+logit("This is a DEBUG message")
+def create_database():
+    if not os.path.exists('image_database.db'):
+        conn = sqlite3.connect('image_database.db')
+        c = conn.cursor()
+        #if not exist create a new table
+        c.execute('''CREATE TABLE IF NOT EXISTS images
+                     (date_time text, prompt text, Filename text, data texts)''')
+        conn.commit()
+        conn.close()
+    print("Database created successfully!")    
+create_database()            
+        
+# Function to read the contents of the notes file
+def read_notes():
+    with open('static/text
+otes_app.txt', 'r') as f:
+        return f.read()
+
+# Function to write contents to the notes file
+def write_notes(content):
+    with open('static/text
+otes_app.txt', 'w') as f:
+        f.write(content)
+
+@app.route('
+otes')
+def notes():
+    text = read_notes()
+    return render_template('note_app_note.html', text=text)
+
+@app.route('/edit_notes', methods=['GET', 'POST'])
+def edit_notes():
+    if request.method == 'POST':
+        content = request.form.get('content', '').strip()
+        write_notes(content)
+        return redirect(url_for('notes'))
+    else:
+        text = read_notes()
+        return render_template('edit_notes.html', text=text)
+
+@app.route('/', methods=['POST', 'GET'])
+def index():
+    if request.method == 'POST':
+        search_term = request.form.get('search', '').strip()
+        if search_term:
+            text = read_notes()
+            paragraphs = text.split('----------')
+
+            # Filter paragraphs that contain the search term
+            matching_paragraphs = [p for p in paragraphs if search_term in p]
+
+            if matching_paragraphs:
+                logger.debug("Matching Paragraphs: ", matching_paragraphs)
+                return render_template('notes_app.html', text=matching_paragraphs)
+            else:
+                return render_template('notes_app.html', text=["No matching results."])
+        else:
+            return render_template('notes_app.html', text=["Enter a search term."])
+
+    return render_template('notes_app.html', text=[])
+
+@app.route('/search', methods=['POST', 'GET'])
+def search():
+    if request.method == 'POST':
+        search_term = request.form.get('search', '').strip()
+        if search_term:
+            text = read_notes()
+            paragraphs = text.split('----------')
+
+            # Filter paragraphs that contain the search term
+            matching_paragraphs = [p for p in paragraphs if search_term in p]
+
+            if matching_paragraphs:
+                logger.debug("Matching Paragraphs: ", matching_paragraphs)
+                return render_template('notes_app.html', text=matching_paragraphs)
+            else:
+                return render_template('notes_app.html', text=["No matching results."])
+        else:
+            return render_template('notes_app.html', text=["Enter a search term."])
+
+    return render_template('notes_app.html', text=[])
+
+# Function to add ten dashes before and after the content
+def format_content(content):
+    separator = '----------\n'  # Define the separator
+    formatted_content = f'{separator}{content.strip()}'  # Add separator before the content
+    return formatted_content
+
+@app.route('/append_notes', methods=['POST', 'GET'])
+def append_notes():
+    if request.method == 'POST':
+        new_content = request.form.get('new_content', '').strip()
+        if new_content:
+            formatted_content = format_content(new_content)  # Format the content
+            with open('static/text
+otes_app.txt', 'a') as f:
+                f.write(formatted_content)
+            render_template('notes_app.html')
+        else:
+            return 'No content to append'
+
+    return render_template('append_notes_app.html')
+
+@app.route('/tree')
+def tree():
+    return render_template('NOTES_APPLICATION_tree.html')
+#add a declaration to open a text generated image and store it in an sqlite database
+# along with the date and time and the prompt used to generate the image
+    
+
+
+@app.route('/image', methods=['POST', 'GET'])
+def image():
+    if request.method == 'POST':
+        image_file = request.files['image']
+        prompt = request.form['prompt']
+        date_time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        
+        # Save the image
+        Filename = f"{date_time}_{prompt}.png"
+        image_path = os.path.join('static/images/prompts', Filename)
+        image_file.save(image_path) 
+        
+        # Read and resize the image
+        with Image.open(image_path) as img:
+            img_resized = img.resize((img.width // 4, img.height // 4), Image.ANTIALIAS)
+            img_bytes = img_resized.tobytes()
+            image_base64 = base64.b64encode(img_bytes).decode('utf-8')
+            base64_string= image_base64   
+            output_filename = 'Logs/output_image.png'
+            base64_to_image(base64_string, output_filename)
+        # Insert the image into the database
+        conn = sqlite3.connect('image_database.db')
+        c = conn.cursor()
+        c.execute("INSERT INTO images VALUES (?, ?, ?, ?)", (date_time, prompt, Filename, image_base64))
+        logit(f"Image saved: {Filename}")
+        logit(f"Prompt: {prompt}")
+        logit(f"Date and Time: {date_time}")
+        logit(f"Image Data: {image_base64}")
+        conn.commit()
+        conn.close()
+        
+        # Select the last row in the table
+        conn = sqlite3.connect('image_database.db')
+        c = conn.cursor()
+        c.execute("SELECT * FROM images ORDER BY date_time DESC LIMIT 1")
+        row = c.fetchone()
+        conn.close()
+        
+        # Return the image name and data to the template
+        return render_template('view_image_prompt.html', image_name=row[2], date_time=row[0], prompt=row[1], data=row[3])
+    
+    if request.method == 'GET':
+        return render_template('image.html')
+def base64_to_image(base64_string, output_filename):
+    # Decode base64 string into binary data
+    binary_data = base64.b64decode(base64_string)
+
+    # Write binary data to a file
+    with open(output_filename, 'wb') as file:
+        file.write(binary_data)
+    print(f"BinaryData {binary_data}")
+    file.close()    
+    print(f"Image saved as {output_filename}")
+
+# Example usage:
+with open("Logs/codeium.txt", "rb") as file:
+    base64_string = file.read()
+
+output_filename = 'Logs/output_image.jpg'
+
+base64_to_image(base64_string, output_filename)
+
+if __name__ == '__main__':
+    create_basic_flask_tree()
+    create_database()  # Call create_database function here
+    print("Starting Python Flask Server For Notes_App \n on port 5200")
+    app.run(debug=True, host='0.0.0.0', port=5200)

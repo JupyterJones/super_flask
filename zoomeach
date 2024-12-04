@@ -1,0 +1,121 @@
+import glob
+import random
+from PIL import Image
+import os
+import logging
+import subprocess
+import uuid
+import shutil
+from moviepy.video.compositing.transitions import slide_in
+from moviepy.editor import *
+
+# Configure logging
+logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
+
+def prep_homedirectory():
+    image_directory = 'static/temp_images_exp'
+    logging.info(f"Image directory: {image_directory}")
+
+    # Create or clear the image directory
+    if os.path.exists(image_directory):
+        shutil.rmtree(image_directory)
+        logging.info(f"Cleared contents of image directory: {image_directory}")
+    os.makedirs(image_directory, exist_ok=True)
+    logging.info(f"Created image directory: {image_directory}")
+
+    # Copy all jpg and png files from source to image_directory
+    for f in os.listdir('static/novel_images'):
+        if f.endswith(('.jpg', '.jpeg', '.png')):
+            logging.info(f"Copying {f} to {image_directory}")
+            shutil.copy(os.path.join('static', 'novel_images', f), image_directory)
+
+    # Get and shuffle the list of image files in the directory
+    image_files = [f for f in os.listdir(image_directory) if f.endswith(('.jpg', '.jpeg', '.png'))]
+    random.shuffle(image_files)
+    logging.info(f"Shuffled image files: {image_files}")
+
+    return image_files
+
+def image_dir_to_zoom():
+    selected_directory = 'static/temp_images_exp'
+    os.makedirs(selected_directory, exist_ok=True)
+    
+    try:
+        image_files = glob.glob(f'{selected_directory}/*.[jp][pn]g')
+        if not image_files:
+            logging.error("No images found in the directory.")
+            return
+
+        SIZE = Image.open(random.choice(image_files)).size
+    except Exception as e:
+        logging.error(f"Error opening image: {e}")
+        return
+
+    output_video = 'generated_video_exp.mp4'
+    frame_rate = 60
+    zoom_increment = 0.0005
+    zoom_duration = 300
+    width, height = 512, 768
+
+    ffmpeg_cmd = (
+        f"ffmpeg -hide_banner -pattern_type glob -framerate {frame_rate} "
+        f"-i '{selected_directory}/*.jpg' "
+        f"-vf \"scale=8000:-1,zoompan=z='min(zoom+{zoom_increment},1.5)':x='iw/2':y='ih/2-4000':d={zoom_duration}:s={width}x{height},crop={width}:{height}:0:256\" "
+        f"-c:v libx264 -pix_fmt yuv420p -r {frame_rate} -s {width}x{height} -y {output_video}"
+    )
+
+    logging.info(f"FFmpeg command: {ffmpeg_cmd}")
+    try:
+        subprocess.run(ffmpeg_cmd, shell=True, check=True)
+        logging.info("Video generated successfully.")
+    except subprocess.CalledProcessError as e:
+        logging.error(f"FFmpeg command failed: {e}")
+        return None
+
+    video_name = str(uuid.uuid4()) + '_zoom_exp.mp4'
+    if not os.path.exists('static/assets_exp'):
+        os.makedirs('static/assets_exp')    
+    shutil.copy(output_video, os.path.join('static/assets_exp', video_name))
+
+    output_vid = os.path.join('static/assets_exp', video_name)
+    logging.info(f"Generated video: {output_vid}")
+    return output_vid
+
+def add_title_image(video_path, hex_color="#A52A2A"):
+    directory_path = "static/temp_exp"
+    os.makedirs(directory_path, exist_ok=True)
+    
+    video_clip = VideoFileClip(video_path)
+    width, height = video_clip.size
+    padded_size = (width + 80, height + 80)
+    x_position = (padded_size[0] - width) / 2
+    y_position = (padded_size[1] - height) / 2
+
+    # Convert hex to RGB and create background clip
+    rgb_tuple = tuple(int(hex_color[i:i+2], 16) for i in (1, 3, 5))
+    background_clip = ColorClip(padded_size, color=rgb_tuple)
+    padded_video_clip = CompositeVideoClip([background_clip, video_clip.set_position((x_position, y_position))]).set_duration(video_clip.duration)
+
+    # Load and resize title image
+    title_image = ImageClip("static/assets/Zoom_Images.png").resize(padded_video_clip.size).set_position((0, -5)).set_duration(video_clip.duration)
+    composite_clip = CompositeVideoClip([padded_video_clip, title_image]).set_duration(video_clip.duration)
+
+    # Load background music
+    mp3_files = glob.glob("/mnt/HDD500/collections/music_long/*.mp3")
+    random.shuffle(mp3_files)
+    music_clip = AudioFileClip(random.choice(mp3_files)).audio_fadein(0.5).audio_fadeout(0.5).set_duration(video_clip.duration)
+    composite_clip = composite_clip.set_audio(music_clip)
+
+    output_path = 'static/temp_exp/final_output_expX.mp4'
+    composite_clip.write_videofile(output_path)
+    
+    # Save output and speed up the video
+    unique_name = f"AI_Creates_Composite_{uuid.uuid4()}.mp4"
+    shutil.copyfile(output_path, f"/home/jack/Desktop/HDD500/collections/vids/{unique_name}")
+    return output_path
+
+if __name__ == "__main__":
+    prep_homedirectory()
+    video_path = image_dir_to_zoom()
+    if video_path:
+        add_title_image(video_path)
