@@ -1,0 +1,7 @@
+from guppy import hpy
+h = hpy()
+
+heap = h.heap()
+print(heap)
+# Print more of the data rows
+print(heap.more)

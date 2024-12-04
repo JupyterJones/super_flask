@@ -1,0 +1,135 @@
+import os
+import subprocess
+import cv2
+from flask import Flask, render_template, request, jsonify
+
+app = Flask(__name__)
+
+# Default animation data
+DEFAULT_ANIMATION_DATA = [
+    {"zoom": 1.0, "pan": [0, 0]},
+    {"zoom": 1.0, "pan": [0, 0]},
+    {"zoom": 1.2, "pan": [0.1, 0.1]},
+    {"zoom": 1.5, "pan": [0.2, 0.2]},
+    {"zoom": 2.0, "pan": [0.4, 0.4]},
+    {"zoom": 2.5, "pan": [0.6, 0.6]},
+    {"zoom": 3.0, "pan": [0.8, 0.8]},
+    {"zoom": 2.5, "pan": [0.6, 0.6]},
+    {"zoom": 2.5, "pan": [0.6, 0.6]},
+    {"zoom": 1.5, "pan": [0.2, 0.2]},
+    {"zoom": 1.0, "pan": [0, 0]},
+    {"zoom": 1.0, "pan": [0, 0]}
+]
+
+def create_zoom_pan_animation(image_path, animation_data, output_video_path, interpolation_steps=10, frame_rate=10.0):
+    """
+    Creates a zoom and pan animation from an image and animation data, with smooth transitions.
+    """
+    # Load the image
+    image = cv2.imread(image_path)
+    if image is None:
+        print(f"Error: Unable to load image at {image_path}")
+        return
+
+    # Get image dimensions
+    original_height, original_width = image.shape[:2]
+
+    # Set the output frame dimensions
+    output_width, output_height = 512, 768
+
+    # Video writer for mp4 format
+    fourcc = cv2.VideoWriter_fourcc(*'mp4v')
+    video_writer = cv2.VideoWriter(output_video_path, fourcc, frame_rate, (output_width, output_height))
+
+    # Loop through keyframes and interpolate between them
+    frames = []
+    for i in range(len(animation_data) - 1):
+        start_frame = animation_data[i]
+        end_frame = animation_data[i + 1]
+
+        # Interpolate between start and end frames
+        for step in range(interpolation_steps):
+            # Calculate interpolated zoom and pan values
+            zoom = start_frame["zoom"] + (end_frame["zoom"] - start_frame["zoom"]) * (step / interpolation_steps)
+            pan_x = start_frame["pan"][0] + (end_frame["pan"][0] - start_frame["pan"][0]) * (step / interpolation_steps)
+            pan_y = start_frame["pan"][1] + (end_frame["pan"][1] - start_frame["pan"][1]) * (step / interpolation_steps)
+
+            # Calculate crop size based on zoom
+            crop_width = int(original_width / zoom)
+            crop_height = int(original_height / zoom)
+
+            # Calculate the top-left corner for cropping
+            x_offset = int(pan_x * (original_width - crop_width))
+            y_offset = int(pan_y * (original_height - crop_height))
+
+            # Ensure crop coordinates are within image boundaries
+            x_offset = max(0, min(x_offset, original_width - crop_width))
+            y_offset = max(0, min(y_offset, original_height - crop_height))
+
+            # Crop and resize to fit output dimensions
+            cropped_image = image[y_offset:y_offset + crop_height, x_offset:x_offset + crop_width]
+            resized_image = cv2.resize(cropped_image, (output_width, output_height))
+
+            frames.append(resized_image)
+
+    # Append frames to the video
+    for frame in frames:
+        video_writer.write(frame)
+
+    video_writer.release()
+    print(f"Video saved successfully at {output_video_path}")
+
+def stabilize_video(input_video, output_video):
+    """
+    Stabilizes the video using FFmpeg.
+    """
+    try:
+        print("Starting video stabilization process...")
+        
+        # Detecting shakes
+        subprocess.call([
+            'ffmpeg', '-i', input_video, '-vf', 
+            'vidstabdetect=shakiness=5:accuracy=10', '-f', 'null', '-'
+        ])
+        
+        print("Shake detection complete.")
+        
+        # Stabilizing the video
+        subprocess.call([
+            'ffmpeg', '-i', input_video, '-vf', 
+            'vidstabtransform=smoothing=5:input=transforms.trf', '-y', output_video
+        ])
+        
+        print(f"Video stabilization complete. Stabilized video saved as {output_video}")
+
+    except Exception as e:
+        print(f"An error occurred: {e}")
+
+@app.route('/')
+def index():
+    # List images in the static/archived-store directory
+    image_files = os.listdir('static/novel_images')
+    return render_template('json_zoom.html', images=image_files)
+
+@app.route('/create_animation', methods=['POST'])
+def create_animation():
+    # Get the selected image and animation data from the form
+    selected_image = request.json.get('image', '')
+    animation_data = request.json.get('animation_data', DEFAULT_ANIMATION_DATA)
+
+    # Construct the full path for the selected image
+    image_path = os.path.join('static/novel_images', selected_image)
+    output_video_path = 'static/temp_exp/output.mp4'
+    stabilized_video_path = 'static/temp_exp/stabilized_output.mp4'
+    
+    # Create the zoom and pan animation
+    create_zoom_pan_animation(image_path, animation_data, output_video_path, interpolation_steps=120, frame_rate=15.0)
+
+    # Stabilize the video
+    stabilize_video(output_video_path, stabilized_video_path)
+
+    # Return the path of the final video
+    return jsonify({"message": "Animation created and stabilized successfully.", "video_path": stabilized_video_path})
+
+if __name__ == '__main__':
+    app.run(debug=True, host='0.0.0.0', port=5100)

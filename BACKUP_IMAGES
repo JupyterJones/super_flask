@@ -1,0 +1,123 @@
+import os
+import json
+from datetime import datetime
+from PIL import Image, UnidentifiedImageError
+import moviepy.editor as mp
+import gc
+
+# Load or initialize the JSON file
+def load_video_segments_json(json_path):
+    if os.path.exists(json_path):
+        with open(json_path, 'r') as f:
+            return json.load(f)
+    else:
+        return {"segments": []}  # Initialize an empty structure if file doesn't exist
+
+# Save the JSON file with updated segments
+def save_video_segments_json(json_data, json_path):
+    with open(json_path, 'w') as f:
+        json.dump(json_data, f, indent=4)
+
+# Find images in a directory and track their full directory paths
+def find_images_in_directory(root_dir):
+    image_extensions = ('.jpg', '.jpeg', '.png', '.gif')
+    image_files = []
+    directories = set()
+    
+    for subdir, _, files in os.walk(root_dir):
+        for file in files:
+            if file.lower().endswith(image_extensions) and '_resized.jpg' not in file.lower():
+                image_files.append(os.path.join(subdir, file))
+                directories.add(subdir)  # Add the full directory path
+
+    return sorted(image_files), sorted(directories)
+
+# Resize image function
+def resize_image(image_path, target_size=(512, 768)):
+    try:
+        with Image.open(image_path) as img:
+            if img.mode != "RGB":
+                img = img.convert("RGB")
+            return img.resize(target_size, Image.LANCZOS)
+    except UnidentifiedImageError:
+        print(f"Error: Cannot identify image file {image_path}. Skipping.")
+        return None
+
+# Create a video segment from a batch of images
+def create_video_segment(image_batch, segment_index, directories, fps=24):
+    clips = []
+    temp_files = []
+    
+    for image_file in image_batch:
+        resized_image = resize_image(image_file)
+        if resized_image:
+            temp_path = image_file + "_resized.jpg"
+            resized_image.save(temp_path, "JPEG")
+            temp_files.append(temp_path)
+            img_clip = mp.ImageClip(temp_path).set_duration(1 / fps)
+            clips.append(img_clip)
+
+    if clips:
+        segment_filename = f"segment_{segment_index}.mp4"
+        print(f"Creating segment video: {segment_filename}")
+        video = mp.concatenate_videoclips(clips, method="compose")
+        
+        try:
+            video.write_videofile(segment_filename, fps=fps)
+            print(f"Segment video created: {segment_filename}")
+        except Exception as e:
+            print(f"Error creating segment video: {e}")
+        
+        for temp_file in temp_files:
+            if os.path.exists(temp_file):
+                os.remove(temp_file)
+                print(f"Deleted temporary file: {temp_file}")
+
+        # Return segment filename and directories for this batch
+        return segment_filename, directories
+    return None, None
+
+# Update JSON structure after each segment is created
+def update_json_with_segment(json_data, segment_filename, directories, batch_start, batch_end):
+    json_data["segments"].append({
+        "segment": segment_filename,
+        "directories": directories,
+        "batch_start": batch_start,
+        "batch_end": batch_end
+    })
+
+# Main function to orchestrate batch processing and video creation
+def create_backup_video(root_dir, json_path, fps=24, batch_size=1000):
+    # Load existing JSON data
+    video_segments_data = load_video_segments_json(json_path)
+    
+    # Find images and directories in the root directory
+    images, directories = find_images_in_directory(root_dir)
+    
+    if not images:
+        print("No images found in the directory.")
+        return
+    
+    # Process images in batches
+    for i in range(0, len(images), batch_size):
+        image_batch = images[i:i + batch_size]
+        segment_index = i // batch_size
+        segment_file, batch_dirs = create_video_segment(image_batch, segment_index, directories, fps=fps)
+        
+        if segment_file:
+            update_json_with_segment(video_segments_data, segment_file, batch_dirs, i, i + len(image_batch) - 1)
+            
+            # Save progress to JSON after each segment
+            save_video_segments_json(video_segments_data, json_path)
+            
+            # Clean up memory
+            del image_batch, batch_dirs, segment_file
+            gc.collect()  # Force garbage collection to free memory
+
+if __name__ == "__main__":
+    #static_directory = '/home/jack/Desktop/Flask_Make_Art/static'
+    static_directory = '/home/jack/Desktop/all_images'
+    json_path = 'all_images_video_segments.json'
+    
+    # Create the backup video, storing progress in JSON
+    create_backup_video(static_directory, json_path, fps=24, batch_size=1000)

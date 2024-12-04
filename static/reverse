@@ -1,0 +1,1 @@
+ffmpeg -hide_banner -i $1 -vf reverse -af areverse -y $(pwd)/_REVERSE.mp4
