@@ -96,3 +96,13 @@ Thursday_Dec-05-2024_09-18-30 - File: /home/jack/Desktop/super_flask/app.py, Fun
 Thursday_Dec-05-2024_09-18-30 - File: /home/jack/Desktop/super_flask/app.py, Function: add_halloween_title_image, Line: 6278 - Message: Background music added: /mnt/HDD500/collections/music_dark/Finding_Synergy-Jeremy_Korpa.mp3
 Thursday_Dec-05-2024_09-18-30 - File: /home/jack/Desktop/super_flask/app.py, Function: add_halloween_title_image, Line: 6285 - Message: Output video path: static/temp_exp/halloweenX.mp4
 Thursday_Dec-05-2024_09-19-44 - File: /home/jack/Desktop/super_flask/app.py, Function: add_halloween_title_image, Line: 6293 - Message: Final video saved to: /mnt/HDD500/collections/vids/Ready_Post_73dc9d5ae68e45b98518c0bbfa9d6062.mp4
+Thursday_Dec-05-2024_09-47-34 - File: /home/jack/Desktop/super_flask/app.py, Function: <module>, Line: 9751 - Message: you are here line 9580
+Thursday_Dec-05-2024_09-47-50 - File: /home/jack/Desktop/super_flask/app.py, Function: <module>, Line: 9751 - Message: you are here line 9580
+Thursday_Dec-05-2024_10-09-00 - File: /home/jack/Desktop/super_flask/app.py, Function: scan_directories, Line: 1545 - Message: Scanning directory: static/style_resources
+Thursday_Dec-05-2024_10-09-07 - File: /home/jack/Desktop/super_flask/app.py, Function: scan_directories, Line: 1545 - Message: Scanning directory: static/backups_resources
+Thursday_Dec-05-2024_10-09-07 - File: /home/jack/Desktop/super_flask/app.py, Function: scan_directories, Line: 1545 - Message: Scanning directory: static/capture_resources
+Thursday_Dec-05-2024_10-09-07 - File: /home/jack/Desktop/super_flask/app.py, Function: scan_directories, Line: 1545 - Message: Scanning directory: static/archived_resources
+Thursday_Dec-05-2024_10-09-07 - File: /home/jack/Desktop/super_flask/app.py, Function: scan_directories, Line: 1545 - Message: Scanning directory: static/story_resources
+Thursday_Dec-05-2024_10-09-07 - File: /home/jack/Desktop/super_flask/app.py, Function: scan_directories, Line: 1545 - Message: Scanning directory: static/novel_resources
+Thursday_Dec-05-2024_10-09-07 - File: /home/jack/Desktop/super_flask/app.py, Function: scan_directories, Line: 1545 - Message: Scanning directory: static/junk_resources
+Thursday_Dec-05-2024_10-09-07 - File: /home/jack/Desktop/super_flask/app.py, Function: scan_directories, Line: 1545 - Message: Scanning directory: static/captions_resources
