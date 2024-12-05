@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Sound to Image</title>
+    <link rel="stylesheet" href="/static/css/dark.css">
+
+    <script>
+        function previewImage(imgSrc) {
+            const preview = document.getElementById('image-preview');
+            preview.src = imgSrc;
+            preview.style.display = 'block';
+        }
+
+        function playAudio(audioFile) {
+            const audioElement = document.getElementById(`audio_${audioFile}`);
+            const audios = document.querySelectorAll('audio');
+            audios.forEach(audio => {
+                if (!audio.paused) {
+                    audio.pause();
+                    audio.currentTime = 0;
+                }
+            });
+            audioElement.style.display = 'block';
+            audioElement.play();
+        }
+    </script>
+</head>
+
+<body>
+    <h1>Add Sound to Image / mk_avatar.html</h1>
+    <a href="/"><button>Home</button></a>&nbsp;&nbsp;&nbsp;&nbsp;
+    <a href="{{ url_for('render_avatar_sound_form') }}"><button>Refresh Page</button></a>
+    <form action="/mk_avatar" method="post">
+        <label for="image_path">Select Image:</label><br />
+        <div class="media-container">
+            {% for image in image_files %}
+            <div class="media-item">
+                <input type="radio" name="image_path" id="{{ image }}" value="{{ image }}"
+                    onclick="previewImage('/static/novel_images/{{ image }}')" required>
+                <label for="{{ image }}">
+                    <img src="/static/novel_images/{{ image }}" class="image-preview" alt="{{ image }}">
+
+                    <span class="media-label">{{ image[-14:-4] }}</span>
+                </label>
+            </div>
+            {% endfor %}
+        </div>
+        <img id="image-preview" class="image-preview" style="display:none;" alt="Image Preview"><br /><br />
+
+        <h2>Preview and Select an Audio</h2>
+        <div class="media-container">
+            {% for audio in audio_files %}
+            <div class="media-item">
+                <button type="button" onclick="playAudio('{{ audio }}')">Preview</button>
+                <audio id="audio_{{ audio }}" controls style="display: none;">
+                    <source src="/static/output/{{ audio }}" type="audio/mpeg">
+                </audio>
+                <input type="radio" name="audio" value="{{ audio }}">
+                <span class="media-label">
+                    {{ audio[:-4] }}
+                </span>
+            </div>
+            {% endfor %}
+        </div>
+        <br />
+        <button type="submit">Create Video</button>
+    </form>
+
+    {% if video %}
+    <h2>Output Video</h2>
+    <video style="width:250px;height:auto;" controls>
+        <source src="{{ video }}" type="video/mp4">
+    </video>
+    {% endif %}<br /><br />
+    <a href="/makeit"><button>Make it a Lipsync Avatar</button></a>
+</body>
+
+</html>

@@ -1,0 +1,673 @@
+Total 142 (delta 6), reused 0 (delta 0)
+remote: Resolving deltas: 100% (6/6), done.
+remote: error: Trace: 70d097d8fb5acb5986ca51edafa726770436b1ac0e951eec68198eb6d596faf4
+remote: error: See https://gh.io/lfs for more information.
+remote: error: File static/balacoon/en_us_hifi_jets_cpu.addon is 221.68 MB; this exceeds GitHub's file size limit of 100.00 MB
+remote: error: GH001: Large files detected. You may want to try Git Large File Storage - https://git-lfs.github.com.
+To github.com:JupyterJones/super_flask.git
+ ! [remote rejected] master -> master (pre-receive hook declined)
+error: failed to push some refs to 'git@github.com:JupyterJones/super_flask.git'
+ChatGPT said:
+ChatGPT
+
+The error indicates that you attempted to push a file exceeding GitHub's size limit (100 MB) to your repository. GitHub requires the use of Git Large File Storage (LFS) for files larger than 100 MB. Here’s how you can resolve the issue step-by-step:
+1. Install Git LFS
+
+First, ensure Git LFS is installed on your system:
+
+sudo apt install git-lfs  # For Linux (Ubuntu/Debian)
+
+Alternatively, you can install it via other package managers:
+
+# For macOS (Homebrew)
+brew install git-lfs
+
+# For Windows
+choco install git-lfs
+
+After installation, enable LFS for your repository:
+
+git lfs install
+
+2. Track Large Files
+
+To track the specific large file (static/balacoon/en_us_hifi_jets_cpu.addon), run:
+
+git lfs track "static/balacoon/en_us_hifi_jets_cpu.addon"
+
+This will create or modify a .gitattributes file in your repository to track the large file.
+3. Unstage the Large File
+
+Unstage the large file from your current commit:
+
+git reset HEAD static/balacoon/en_us_hifi_jets_cpu.addon
+
+Then, remove it from your repository (but keep it locally):
+
+git rm --cached static/balacoon/en_us_hifi_jets_cpu.addon
+
+4. Re-add the File with LFS
+
+Add the large file back to the repository, now tracked by LFS:
+
+git add static/balacoon/en_us_hifi_jets_cpu.addon
+
+5. Commit and Push Changes
+
+Commit the changes and push them to the repository:
+
+git commit -m "Track large file with Git LFS"
+git push origin master
+
+6. Verify Success
+
+To confirm LFS is working, check if the large file is being tracked:
+
+git lfs ls-files
+
+Alternative: Use .gitignore for Large Files
+
+If the file shouldn't be part of the repository, add it to .gitignore:
+
+echo "static/balacoon/en_us_hifi_jets_cpu.addon" >> .gitignore
+git add .gitignore
+git commit -m "Ignore large file"
+git push origin master
+
+Let me know if you need more assistance!
+You said:
+git push origin master
+batch response: This repository is over its data quota. Account responsible for LFS bandwidth should purchase more data packs to restore access.
+ChatGPT said:
+ChatGPT
+
+The new error indicates that the GitHub repository has exceeded its Git LFS bandwidth quota, which limits the amount of data that can be uploaded or downloaded using Git LFS. Here’s how you can address this issue:
+1. Understand GitHub LFS Quotas
+
+    Free Plan Limit: GitHub provides 1 GB of storage and 1 GB of bandwidth for Git LFS on free-tier accounts.
+    If you exceed these limits, GitHub requires you to purchase additional bandwidth or storage packs.
+
+2. Options to Resolve the Issue
+A. Purchase Additional Data Packs
+
+    Log in to your GitHub account.
+    Visit the GitHub Billing Page.
+    Purchase additional Git LFS data packs to restore access.
+
+    Note: This is the fastest solution if you need to continue using Git LFS for large files.
+
+B. Remove Git LFS Usage
+
+If you don’t want to purchase extra bandwidth, remove Git LFS from your repository:
+
+    Untrack Large Files from LFS:
+
+git lfs untrack "static/balacoon/en_us_hifi_jets_cpu.addon"
+
+This will stop Git LFS from tracking the file and update the .gitattributes file.
+
+Remove the File from History: Large files already pushed to the repository are still counted against the quota. Use the BFG Repo-Cleaner to remove them:
+
+    Install BFG Repo-Cleaner:
+
+sudo apt install bfg  # For Linux
+brew install bfg      # For macOS
+
+Run BFG to delete large files:
+
+    bfg --delete-files "static/balacoon/en_us_hifi_jets_cpu.addon" .
+
+Repack and Clean the Repository:
+
+git reflog expire --expire=now --all
+git gc --prune=now --aggressive
+
+Force-Push Cleaned Repository:
+
+    git push origin --force
+
+C. Use Alternative Hosting for Large Files
+
+If the file is not essential for the repository:
+
+    Remove the file from Git entirely:
+
+    git rm --cached static/balacoon/en_us_hifi_jets_cpu.addon
+    git commit -m "Remove large file"
+    git push origin master
+
+    Host the file on a file-sharing service (e.g., Google Drive, Dropbox, or AWS S3) and link to it from your project.
+
+D. Switch to a Self-Hosted Git Server
+
+For full control over large files, you can:
+
+    Set up a self-hosted Git server (e.g., GitLab Community Edition).
+    Configure Git LFS on the self-hosted instance.
+
+Next Steps
+
+Choose the solution that best fits your needs. If you’re unsure, I recommend starting with option B (Remove LFS) or C (External Hosting) to avoid ongoing bandwidth costs. Let me know how you'd like to proceed!
+You said:
+sudo apt install bfg
+Reading package lists... Done
+Building dependency tree       
+Reading state information... Done
+E: Unable to locate package bfg
+ChatGPT said:
+ChatGPT
+
+The error indicates that the bfg package is not available in your current package repositories. This happens because BFG Repo-Cleaner isn’t included in the default Ubuntu/Debian package repositories. You’ll need to download and use it manually. Here’s how:
+1. Download BFG Repo-Cleaner
+
+    Visit the official BFG Repo-Cleaner GitHub page.
+    Download the latest .jar file directly:
+
+    wget https://repo1.maven.org/maven2/com/madgag/bfg/1.14.0/bfg-1.14.0.jar
+
+2. Run BFG
+
+    Use Java to execute the .jar file:
+
+java -jar bfg-1.14.0.jar --help
+
+This confirms that the BFG Repo-Cleaner is running.
+
+To remove your large file (static/balacoon/en_us_hifi_jets_cpu.addon), run:
+
+    java -jar bfg-1.14.0.jar --delete-files "static/balacoon/en_us_hifi_jets_cpu.addon" .
+
+3. Complete Cleanup with Git
+
+After using BFG, clean your repository with Git:
+
+git reflog expire --expire=now --all
+git gc --prune=now --aggressive
+
+4. Force-Push Cleaned Repository
+
+Finally, force-push the cleaned repository to GitHub:
+
+git push origin --force
+
+Let me know if you need further assistance!
+You said:
+java -jar bfg-1.14.0.jar --delete-files "static/balacoon/en_us_hifi_jets_cpu.addon" .
+Error: *** Can only match on filename, NOT path *** - remove '/' path segments
+bfg 1.14.0
+Usage: bfg [options] [<repo>]
+
+  -b, --strip-blobs-bigger-than <size>
+                           strip blobs bigger than X (eg '128K', '1M', etc)
+  -B, --strip-biggest-blobs NUM
+                           strip the top NUM biggest blobs
+  -bi, --strip-blobs-with-ids <blob-ids-file>
+                           strip blobs with the specified Git object ids
+  -D, --delete-files <glob>
+                           delete files with the specified names (eg '*.class', '*.{txt,log}' - matches on file name, not path within repo)
+  --delete-folders <glob>  delete folders with the specified names (eg '.svn', '*-tmp' - matches on folder name, not path within repo)
+  --convert-to-git-lfs <value>
+                           extract files with the specified names (eg '*.zip' or '*.mp4') into Git LFS
+  -rt, --replace-text <expressions-file>
+                           filter content of files, replacing matched text. Match expressions should be listed in the file, one expression per line - by default, each expression is treated as a literal, but 'regex:' & 'glob:' prefixes are supported, with '==>' to specify a replacement string other than the default of '***REMOVED***'.
+  -fi, --filter-content-including <glob>
+                           do file-content filtering on files that match the specified expression (eg '*.{txt,properties}')
+  -fe, --filter-content-excluding <glob>
+                           don't do file-content filtering on files that match the specified expression (eg '*.{xml,pdf}')
+  -fs, --filter-content-size-threshold <size>
+                           only do file-content filtering on files smaller than <size> (default is 1048576 bytes)
+  -p, --protect-blobs-from <refs>
+                           protect blobs that appear in the most recent versions of the specified refs (default is 'HEAD')
+  --no-blob-protection     allow the BFG to modify even your *latest* commit. Not recommended: you should have already ensured your latest commit is clean.
+  --private                treat this repo-rewrite as removing private data (for example: omit old commit ids from commit messages)
+  --massive-non-file-objects-sized-up-to <size>
+                           increase memory usage to handle over-size Commits, Tags, and Trees that are up to X in size (eg '10M')
+  <repo>                   file path for Git repository to clean
+ChatGPT said:
+ChatGPT
+
+The error indicates that BFG Repo-Cleaner only matches files by their filename, not the full path. You need to modify your command to match the filename itself without the path. Here's how to resolve it:
+1. Correct Command for BFG
+
+To delete the file, simply remove the path (static/balacoon/) from the filename. Try the following:
+
+java -jar bfg-1.14.0.jar --delete-files "en_us_hifi_jets_cpu.addon" .
+
+This should delete any file with that name across the entire repository, regardless of its folder.
+2. Repack and Clean the Repository
+
+After running the BFG command, perform a garbage collection to fully remove the file from the Git history:
+
+git reflog expire --expire=now --all
+git gc --prune=now --aggressive
+
+3. Force-Push to GitHub
+
+Finally, push the changes to GitHub:
+
+git push origin --force
+
+This should remove the large file from your repository and free up the space on GitHub. Let me know if you run into any further issues!
+You said:
+----- .gitignore --
+static/balacoon/en_us_hifi_jets_cpu.addon
+-----------
+git push
+Enumerating objects: 80, done.
+Counting objects: 100% (80/80), done.
+Delta compression using up to 2 threads
+Compressing objects: 100% (77/77), done.
+Writing objects: 100% (78/78), 165.58 MiB | 2.01 MiB/s, done.
+Total 78 (delta 3), reused 0 (delta 0)
+remote: Resolving deltas: 100% (3/3), completed with 1 local object.
+remote: error: Trace: b618031c353344dfe01b7328cf3594cb844045bc4d9fb0125ef7bb50777ff962
+remote: error: See https://gh.io/lfs for more information.
+remote: error: File static/balacoon/en_us_hifi_jets_cpu.addon is 221.68 MB; this exceeds GitHub's file size limit of 100.00 MB
+remote: error: GH001: Large files detected. You may want to try Git Large File Storage - https://git-lfs.github.com.
+To github.com:JupyterJones/super_flask.git
+ ! [remote rejected] master -> master (pre-receive hook declined)
+error: failed to push some refs to 'git@github.com:JupyterJones/super_flask.git'
+ChatGPT said:
+ChatGPT
+
+The error you're encountering indicates that the file static/balacoon/en_us_hifi_jets_cpu.addon is still being pushed to the repository despite being added to .gitignore. This happens because the file is already tracked in the Git history.
+
+To fully resolve this, you need to ensure that the file is removed from Git's history and is no longer tracked. Here’s how you can address this:
+Step 1: Ensure the File is Untracked
+
+First, make sure that the file is no longer staged for commit:
+
+git rm --cached static/balacoon/en_us_hifi_jets_cpu.addon
+
+This command will unstage the file but keep it on your local machine.
+Step 2: Commit the Removal
+
+Commit the changes to stop tracking the file:
+
+git commit -m "Remove large file from Git history"
+
+Step 3: Remove the File from Git History
+
+Since this file is already part of the Git history, you'll need to clean it out using BFG Repo-Cleaner or git filter-branch.
+
+    Run BFG Repo-Cleaner:
+
+java -jar bfg-1.14.0.jar --delete-files "en_us_hifi_jets_cpu.addon" .
+
+Repack and Clean the Repository: After running BFG, clean up your Git history:
+
+    git reflog expire --expire=now --all
+    git gc --prune=now --aggressive
+
+Step 4: Force Push the Changes
+
+Now that the large file has been removed from history, force-push the changes:
+
+git push origin --force
+
+Step 5: Verify that the File is Not Tracked
+
+After the force push, confirm that the file is no longer tracked by Git:
+
+git lfs ls-files
+
+If the file does not appear in the list, it has been successfully removed.
+Step 6: Check .gitignore
+
+Ensure the file is added to .gitignore so it won’t be tracked in future commits:
+
+echo "static/balacoon/en_us_hifi_jets_cpu.addon" >> .gitignore
+
+Then, commit the .gitignore update:
+
+git add .gitignore
+git commit -m "Update .gitignore to exclude large file"
+git push origin master
+
+By following these steps, the large file should no longer be part of your Git repository, and you should be able to push your changes without hitting the file size limit. Let me know if you need further assistance!
+You said:
+git lfs ls-files
+24a51f1ffd * static/balacoon/en_us_hifi_jets_cpu.addon
+ChatGPT said:
+ChatGPT
+
+The output confirms that static/balacoon/en_us_hifi_jets_cpu.addon is still being tracked by Git LFS. To fully resolve this and remove it from being tracked, follow these steps:
+1. Untrack the File in Git LFS
+
+Untrack the file from Git LFS:
+
+git lfs untrack "static/balacoon/en_us_hifi_jets_cpu.addon"
+
+This will update the .gitattributes file to stop tracking the file with Git LFS.
+2. Remove the File from Git
+
+Unstage the file and remove it from the repository:
+
+git rm --cached static/balacoon/en_us_hifi_jets_cpu.addon
+
+3. Commit the Changes
+
+Commit the updated .gitattributes file and the removal of the file from Git:
+
+git add .gitattributes
+git commit -m "Remove static/balacoon/en_us_hifi_jets_cpu.addon from Git LFS tracking"
+
+4. Purge the File from History
+
+Since the file is already part of the history, use BFG Repo-Cleaner to purge it:
+
+java -jar bfg-1.14.0.jar --delete-files "en_us_hifi_jets_cpu.addon" .
+
+After this, clean up Git:
+
+git reflog expire --expire=now --all
+git gc --prune=now --aggressive
+
+5. Force Push to GitHub
+
+Force-push the changes to GitHub to update the repository:
+
+git push origin --force
+
+6. Verify Success
+
+Check to ensure the file is no longer tracked:
+
+git lfs ls-files
+
+If the file is no longer listed, it has been successfully removed.
+Optional: Add to .gitignore
+
+To prevent this file from being added again, ensure it’s in .gitignore:
+
+echo "static/balacoon/en_us_hifi_jets_cpu.addon" >> .gitignore
+git add .gitignore
+git commit -m "Add large file to .gitignore"
+git push origin master
+
+By completing these steps, the file should no longer be tracked by Git or Git LFS, and you’ll avoid hitting file size or bandwidth limits in the future. Let me know if you encounter any issues!
+You said:
+this is  .gitignore
+*/Wav2Lip-master
+static/balacoon/en_us_hifi_jets_cpu.addon
+
+is that okay or is */balacoon/en_us_hifi_jets_cpu.addon  better ?
+ChatGPT said:
+ChatGPT
+
+The current .gitignore entry static/balacoon/en_us_hifi_jets_cpu.addon is correct for ignoring the specific file because it provides an exact relative path from the root of your repository. There's no need to use the */ prefix unless you want to ignore files or folders across multiple directories with a similar name.
+
+Here's a breakdown:
+Current Entry:
+
+static/balacoon/en_us_hifi_jets_cpu.addon
+
+    Effect: This entry ensures that Git will ignore only the specific file en_us_hifi_jets_cpu.addon located in static/balacoon/.
+
+Alternative Entry:
+
+*/balacoon/en_us_hifi_jets_cpu.addon
+
+    Effect: This would match any directory ending in balacoon containing the file en_us_hifi_jets_cpu.addon. However, this isn't typically needed unless you expect the file to appear in multiple balacoon directories across your project structure.
+
+Recommendation:
+
+Stick with the specific path static/balacoon/en_us_hifi_jets_cpu.addon unless you need a more generic pattern. It's clearer and ensures the correct file is ignored without unintended side effects.
+
+If your goal is to ignore the entire balacoon folder, you could use:
+
+static/balacoon/
+
+Let me know if you have further questions or need clarification!
+You said:
+git rm --cached static/balacoon/en_us_hifi_jets_cpu.addon
+fatal: pathspec 'static/balacoon/en_us_hifi_jets_cpu.addon' did not match any files
+ChatGPT said:
+ChatGPT
+
+The error pathspec ... did not match any files occurs when the file is no longer tracked in your repository (possibly due to prior attempts to remove it or changes in .gitignore). Here’s how to debug and fix this:
+Step 1: Verify if the File is Tracked
+
+Run the following command to check if the file is still tracked:
+
+git ls-files | grep "static/balacoon/en_us_hifi_jets_cpu.addon"
+
+    If the file appears in the output, it means it is still tracked.
+    If no output appears, it means the file is no longer tracked by Git.
+
+Step 2: Check for .gitattributes Entries
+
+Since the file was previously managed by Git LFS, it might still have an entry in the .gitattributes file. Check and remove it:
+
+grep "static/balacoon/en_us_hifi_jets_cpu.addon" .gitattributes
+
+If the file appears, remove its entry from .gitattributes:
+
+sed -i '/static\/balacoon\/en_us_hifi_jets_cpu.addon/d' .gitattributes
+git add .gitattributes
+git commit -m "Remove LFS tracking for static/balacoon/en_us_hifi_jets_cpu.addon"
+
+Step 3: Force Remove the File from History
+
+If the file does not exist in your repository but you are still hitting size errors during a push, it is likely embedded in the Git history. Use BFG Repo-Cleaner or git filter-repo to permanently delete it.
+Option 1: Using BFG
+
+Run BFG to purge the file:
+
+java -jar bfg-1.14.0.jar --delete-files "en_us_hifi_jets_cpu.addon" .
+
+Option 2: Using git filter-repo
+
+Alternatively, use git filter-repo to clean your history:
+
+git filter-repo --path static/balacoon/en_us_hifi_jets_cpu.addon --invert-paths
+
+Step 4: Garbage Collect and Push
+
+Clean up the repository and push:
+
+git reflog expire --expire=now --all
+git gc --prune=now --aggressive
+git push origin --force
+
+Final Notes
+
+    Ensure the file is in .gitignore to prevent it from being re-added:
+
+    echo "static/balacoon/en_us_hifi_jets_cpu.addon" >> .gitignore
+    git add .gitignore
+    git commit -m "Add static/balacoon/en_us_hifi_jets_cpu.addon to .gitignore"
+    git push origin master
+
+    If you continue facing issues, provide the results of the git ls-files and .gitattributes checks, and I’ll help debug further!
+
+You said:
+grep "static/balacoon/en_us_hifi_jets_cpu.addon" .gitattributes
+grep: .gitattributes: No such file or directory
+ChatGPT said:
+ChatGPT
+
+The absence of a .gitattributes file suggests that Git LFS may not have been properly set up for this file, or it was removed earlier in the process. However, the file still seems to be embedded in the Git history, which is why you're encountering errors during pushes.
+
+To resolve this, let’s focus on cleaning the file entirely from the Git history. Follow these steps carefully:
+1. Ensure the File is Completely Untracked
+
+Even if .gitattributes is missing, double-check that the file is untracked in Git:
+
+git rm --cached static/balacoon/en_us_hifi_jets_cpu.addon
+
+If the file is not tracked, you’ll see the error you mentioned earlier, which is fine.
+2. Purge the File from Git History
+
+Since the file exceeds GitHub’s size limits, it must be removed from the entire Git history. Use one of the following tools:
+Option 1: Using BFG Repo-Cleaner
+
+    Run BFG to delete the file:
+
+java -jar bfg-1.14.0.jar --delete-files "en_us_hifi_jets_cpu.addon" .
+
+Clean up the repository:
+
+    git reflog expire --expire=now --all
+    git gc --prune=now --aggressive
+
+Option 2: Using git filter-repo
+
+If you prefer not to use BFG, you can use git filter-repo (requires installation):
+
+    Install git filter-repo:
+
+sudo apt install git-filter-repo
+
+Remove the file from history:
+
+    git filter-repo --path static/balacoon/en_us_hifi_jets_cpu.addon --invert-paths
+
+3. Force Push the Cleaned Repository
+
+After purging the file, push the changes to the remote repository:
+
+git push origin --force
+
+4. Add File to .gitignore
+
+To prevent this file from being accidentally added in the future, ensure it is in .gitignore:
+
+echo "static/balacoon/en_us_hifi_jets_cpu.addon" >> .gitignore
+git add .gitignore
+git commit -m "Add large file to .gitignore"
+git push origin master
+
+5. Verify the Cleanup
+
+Run the following to ensure the file is no longer tracked:
+
+git lfs ls-files
+git ls-files | grep "static/balacoon/en_us_hifi_jets_cpu.addon"
+
+If these commands return no results, the file has been successfully removed.
+
+Let me know if you encounter further issues!
+You said:
+java -jar bfg-1.14.0.jar --delete-files "en_us_hifi_jets_cpu.addon" .
+
+Using repo : /home/jack/Desktop/super_flask/./.git
+
+Found 479 objects to protect
+Found 4 commit-pointing refs : HEAD, refs/heads/master, refs/remotes/origin/HEAD, refs/remotes/origin/master
+
+Protected commits
+-----------------
+
+These are your protected commits, and so their contents will NOT be altered:
+
+ * commit 99422943 (protected by 'HEAD')
+
+Cleaning
+--------
+
+Found 5 commits
+Cleaning commits:       100% (5/5)
+Cleaning commits completed in 62 ms.
+
+BFG aborting: No refs to update - no dirty commits found??
+ChatGPT said:
+ChatGPT
+
+The message BFG aborting: No refs to update - no dirty commits found?? indicates that BFG did not find any references to the file en_us_hifi_jets_cpu.addon in the repository’s commit history to clean. This could happen if:
+
+    The file is no longer part of any commits but is lingering in unreferenced objects or the reflog.
+    The file is already removed from your history, and only a large file pointer (from Git LFS) remains.
+
+Steps to Resolve the Issue
+1. Verify the File in History
+
+Run this command to check if the file is still part of any commits:
+
+git log --all -- static/balacoon/en_us_hifi_jets_cpu.addon
+
+    If the command outputs commit hashes: The file still exists in some commits. BFG or git filter-repo can be used to clean them.
+    If the command returns nothing: The file is not part of the commit history anymore.
+
+2. Check for Unreferenced Objects
+
+The file might be lingering as unreferenced objects in the Git repository. Run:
+
+git fsck --lost-found
+
+Look for the file hash or references to "lost blobs."
+3. Use Aggressive Garbage Collection
+
+If the file is not part of any commits but remains in the repository, it could be lingering in unreferenced objects. Use aggressive garbage collection to clean it:
+
+git reflog expire --expire=now --all
+git gc --prune=now --aggressive
+
+4. Use git filter-repo as an Alternative
+
+If BFG fails, use git filter-repo to remove the file more comprehensively:
+
+    Install git filter-repo:
+
+sudo apt install git-filter-repo
+
+Run the following command to delete the file:
+
+    git filter-repo --path static/balacoon/en_us_hifi_jets_cpu.addon --invert-paths
+
+5. Force Push the Clean Repository
+
+After cleaning, push the changes forcefully to the remote repository:
+
+git push origin --force
+
+6. Verify and Prevent Future Issues
+
+    Confirm the file is no longer tracked:
+
+git ls-files | grep "static/balacoon/en_us_hifi_jets_cpu.addon"
+git lfs ls-files
+
+Ensure the file is in .gitignore:
+
+    echo "static/balacoon/en_us_hifi_jets_cpu.addon" >> .gitignore
+    git add .gitignore
+    git commit -m "Add large file to .gitignore"
+    git push origin master
+
+If none of these steps resolves the issue, let me know so I can assist further!
+You said:
+is there a bash command to change all html extensions to txt
+ChatGPT said:
+ChatGPT
+
+Yes, you can use a bash command to change all .html file extensions to .txt recursively in a directory. Here's how:
+Single Directory
+
+To rename files in the current directory:
+
+for file in *.html; do
+  mv -- "$file" "${file%.html}.txt"
+done
+
+Recursive for Subdirectories
+
+To rename .html files in the current directory and all subdirectories:
+
+find . -type f -name "*.html" -exec bash -c 'mv "$0" "${0%.html}.txt"' {} \;
+
+Explanation
+
+    ${file%.html}.txt: This removes .html from the filename and appends .txt.
+    find Command:
+        .: Start searching in the current directory.
+        -type f: Only find files.
+        -name "*.html": Match files with .html extension.
+        -exec bash -c '...': Execute a Bash command for each file found.
+
+Dry Run (Optional)
+
+If you'd like to preview what files will be renamed before actually doing it:
+
+find . -type f -name "*.html" -exec bash -c 'echo mv "$0" "${0%.html}.txt"' {} \;
+

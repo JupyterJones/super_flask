@@ -1,0 +1,58 @@
+#!/home/jack/miniconda3/envs/cloned_base/bin/python
+import subprocess
+
+#/home/jack/miniconda3/envs/cloned_base/bin/python inference.py --checkpoint_path "/mnt/HDD500/FLASK/checkpoints/wav2lip_gan.pth" --face "/mnt/HDD500/FlaskAppArchitect_Flask_App_Creator/app/app/sample_data/use.mp4" --audio "/mnt/HDD500/FlaskAppArchitect_Flask_App_Creator/app/app/sample_data/use.mp4" --pads 0 10 0 0
+
+#/home/jack/Desktop/StoryMaker/env/bin/python3.8 /home/jack/Desktop/StoryMaker/inference.py --checkpoint_path "/home/jack/Desktop/StoryMaker/checkpoints/wav2lip_gan.pth" --face "/home/jack/Desktop/StoryMaker/sample_data/use.mp4" --audio "/home/jack/Desktop/StoryMaker/sample_data/use.mp4" --pads 0 10 0 0
+
+#/home/jack/miniconda3/envs/cloned_base/bin/python /home/jack/Desktop/Flask_Make_Art/Wav2Lip-master/inference.py --checkpoint_path "checkpoints/wav2lip_gan.pth" --face "/home/jack/Desktop/Flask_Make_Art/Wav2Lip-master/sample_data/use.mp4" --audio "/home/jack/Desktop/Flask_Make_Art/Wav2Lip-master/sample_data/use.mp4" --pads 0 10 0 0
+
+import subprocess
+import os
+import shutil
+
+def refresh_avatar():
+    try:
+        # Run the script using subprocess
+        subprocess.run(
+            [
+                '/home/jack/miniconda3/envs/cloned_base/bin/python',
+                '/home/jack/Desktop/Flask_Make_Art/Wav2Lip-master/inference.py',
+                '--checkpoint_path', '/home/jack/Desktop/Flask_Make_Art/Wav2Lip-master/checkpoints/wav2lip.pth',
+                '--face', '/home/jack/Desktop/Flask_Make_Art/Wav2Lip-master/sample_data/use.jpg',
+                '--audio', '/home/jack/Desktop/Flask_Make_Art/Wav2Lip-master/sample_data/use.mp3',
+                '--outfile', '/home/jack/Desktop/Flask_Make_Art/Wav2Lip-master/sample_data/result_im_mp3.mp4',
+                '--pads', '0', '20', '0', '0'
+            ], 
+            check=True
+        )
+        return "Created: /home/jack/Desktop/Flask_Make_Art/Wav2Lip-master/sample_data/result_im_mp3.mp4"
+    except subprocess.CalledProcessError as e:
+        return f"An error occurred: {e}"
+    # copyfile '/home/jack/Desktop/Flask_Make_Art/Wav2Lip-master/sample_data/result_im_mp3.mp4' '/home/jack/Desktop/Flask_Make_Art/static/temp_exp/result_im_mp3X.mp4'
+
+def copyfile():    
+    src='/home/jack/Desktop/Flask_Make_Art/Wav2Lip-master/sample_data/result_im_mp3.mp4'
+    dst='/home/jack/Desktop/Flask_Make_Art/static/temp_exp/avatarX.mp4'
+    shutil.copy(src,dst)
+    return "Copied: /home/jack/Desktop/Flask_Make_Art/Wav2Lip-master/sample_data/result_im_mp3.mp4"
+
+if __name__ == '__main__':
+    print(refresh_avatar())
+    copyfile()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Index.html</title>
+        <link rel="stylesheet" href="{{ url_for('static', filename='dark.css') }}">
+    <style>
+        body {
+            background-color: #2C2C2C;
+            color: white;
+            font-family: Arial, sans-serif;
+        }
+
+        .refresh-button {
+            display: inline-block;
+            padding: 5px;
+            margin: 10px;
+            font-size: 2em;
+            background-color: orange;
+            color: rgb(0, 0, 0);
+            text-decoration: none;
+            border-radius: 5px;
+            margin: 1px;
+        }
+
+        .refresh-button:hover {
+            background-color: orange;
+        }
+
+        .sticky {
+            position: -webkit-sticky;
+            position: sticky;
+            top: 0;
+            background-color: orange;
+            padding: 10px 0;
+            z-index: 1000;
+        }
+
+        .video-gallery {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-around;
+        }
+
+        figure {
+            max-width: 300px;
+            margin: 10px;
+            text-align: center;
+        }
+
+        figcaption {
+            margin-top: 8px;
+            font-size: 1rem;
+            color: #cccccc;
+        }
+        pre {
+            color: white;
+            font-size: 24px;
+            font-family: monospace;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+        p {
+            color: white;
+            font-size: 24px;
+            font-family: monospace;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+    img {
+        width: 200px;
+        height: auto;
+        
+        display: block;
+        margin-bottom: 5px;
+        border-radius: 8px;
+    }
+        .sticky {
+        position: -webkit-sticky;
+        padding-top: 10px;
+        margin-left: auto;
+        margin-right: auto;
+        position: sticky;
+        height:auto;
+        top: 0;
+        text-align: center!important;
+        padding: 10px 0;
+        z-index: 1000;
+        width: 100%!important;
+        height:400px;
+    }   
+        .refresh-button2 {
+        display: inline-block;
+        padding: 2px;
+        margin: 10px;
+        font-size: 1.5em;
+        background-color: rgb(255, 225, 0);
+        color: rgb(0, 0, 0);
+        text-decoration: none;
+        border-radius: 5px;
+        margin: 1px;
+        }
+a{
+color:navy;}
+
+    </style>
+</head>
+
+<body style="background-color: rgb(156, 23, 23);">
+    <header class="sticky">
+    <center>
+        <h1 style="color: red;">FlaskArchitect's Utilities / utilities.html</h1>
+        <a href="{{ url_for('mk_videos') }}" class="refresh-button2">Video Processing</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="{{ url_for('clean_storage_route') }}" class="refresh-button2">Image Processing</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="{{ url_for('home2') }}" class="refresh-button2">blog</a><br /><br />
+                    <a href="{{ url_for('home2') }}">Text Home</a>&nbsp;&nbsp;|&nbsp;&nbsp;<a href="{{ url_for('gallery') }}">Gallery</a>&nbsp;&nbsp;|&nbsp;&nbsp;
+            <a href="{{ url_for('ask') }}">Ask GPT2</a>&nbsp;&nbsp;|&nbsp;&nbsp;
+
+            
+            <a href="{{ url_for('view_log') }}">View Log</a>&nbsp;&nbsp;|&nbsp;&nbsp;
+            <a href="{{ url_for('search') }}">Search</a>
+            <input style="width:25%;" type="text" id="search_input" />
+            <button id="search_submit" onclick="moveToNextOccurrence()">
+                Find in page Next
+              </button>
+    </center>
+    </header>
+     <main>
+        {% block content %}
+
+
+
+        {% endblock %}
+    </main>
+    <footer>
+        <p>&copy; 2024 FlaskArchitect Blog</p>
+    </footer>
+</body>
+</html>

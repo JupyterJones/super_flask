@@ -1,0 +1,160 @@
+<!-- view_novel_files -->
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>View Novel Files</title>
+    <style>
+        body {
+            background-color: #2C2C2C;
+            color: white;
+            font-family: Arial, sans-serif;
+        }
+
+        .refresh-button {
+            display: inline-block;
+            padding: 5px;
+            margin: 10px;
+            font-size: 2em;
+            background-color: orange;
+            color: rgb(0, 0, 0);
+            text-decoration: none;
+            border-radius: 5px;
+            margin: 1px;
+        }
+
+        .refresh-button2 {
+            display: inline-block;
+            padding: 5px;
+            margin: 10px;
+            font-size: 2em;
+            background-color: rgb(255, 225, 0);
+            color: rgb(0, 0, 0);
+            text-decoration: none;
+            border-radius: 5px;
+            margin: 1px;
+        }
+
+        .refresh-button3 {
+            display: inline-block;
+            padding: 5px;
+            margin: 10px;
+            font-size: 2em;
+            background-color: blue;
+            color: yellow;
+            text-decoration: none;
+            border-radius: 5px;
+            margin: 1px;
+        }
+
+        .refresh-button:hover {
+            background-color: orange;
+        }
+
+        .sticky {
+            position: -webkit-sticky;
+            position: sticky;
+            top: 0;
+            background-color: orange;
+            padding: 10px 0;
+            z-index: 1000;
+        }
+
+        .video-gallery {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-around;
+        }
+
+        figure {
+            max-width: 300px;
+            margin: 10px;
+            text-align: center;
+        }
+
+        figcaption {
+            margin-top: 8px;
+            font-size: 1rem;
+            color: #cccccc;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: rgb(156, 23, 23);
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .button {
+            display: inline-block;
+            padding: 10px 20px;
+            margin: 5px;
+            font-size: 23px;
+            color: black;
+            background-color: orange;
+            border: none;
+            border-radius: 5px;
+            text-decoration: none;
+            text-align: center;
+            cursor: pointer;
+        }
+        .button:hover {
+            background-color: orange;
+        }
+        .round {
+            display: inline-block;
+            padding: 15px 15px 15px 15px;
+            min-width: 1vw;
+            min-height: 1vw;
+            font-size: 24px;
+            font-weight:bold;
+            color: black;
+            background-color: green;
+            border: 2px black solid;
+            border-radius: 50%;
+            text-decoration: none;
+            text-align: center;
+            cursor: pointer;
+        }
+        .round:hover {
+            background-color: red;
+        }
+        img {
+            max-width: 250px;
+            height: auto;
+            
+        }
+    </style>
+</head>
+
+<body>
+
+<h1>Select Images to Delete / view_novel_files.html</h1>
+<a class="round" href="/">Home</a>
+<form action="/delete_novel_file" method="POST">
+    <h2>Select Images to Delete</h2>
+    <div class="video-gallery">
+        {% for image_path in image_paths %}
+        <figure>
+            <img src="{{ url_for('static', filename=image_path.split('static/')[-1]) }}" alt="Image"><br/>
+            <span>{{ image_path[-14:] }}</span><br/>
+            <!-- Checkbox for each image selection -->
+            <label>
+                <input type="checkbox" name="image_paths[]" value="{{ image_path }}">
+                Select to Delete<br>
+            </label>
+        </figure>
+        {% endfor %}
+    </div>
+    <button class="round" type="submit">Delete Selected Images</button>
+</form>
+
+
+</div>
+</body>
+
+</html>

@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Index.html</title>
+    <style>
+        body {
+            background-color: #2C2C2C;
+            color: white;
+            font-family: Arial, sans-serif;
+        }
+
+        .refresh-button {
+            display: inline-block;
+            padding: 5px;
+            margin: 10px;
+            font-size: 2em;
+            background-color: orange;
+            color: rgb(0, 0, 0);
+            text-decoration: none;
+            border-radius: 5px;
+            margin: 1px;
+        }
+
+        .refresh-button2 {
+            display: inline-block;
+            padding: 5px;
+            margin: 10px;
+            font-size: 2em;
+            background-color: rgb(255, 225, 0);
+            color: rgb(0, 0, 0);
+            text-decoration: none;
+            border-radius: 5px;
+            margin: 1px;
+        }
+
+        .refresh-button:hover {
+            background-color: orange;
+        }
+
+        .sticky {
+            position: -webkit-sticky;
+            position: sticky;
+            top: 0;
+            background-color: orange;
+            padding: 10px 0;
+            z-index: 1000;
+        }
+
+        .video-gallery {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-around;
+        }
+
+        figure {
+            max-width: 300px;
+            margin: 10px;
+            text-align: center;
+        }
+
+        figcaption {
+            margin-top: 8px;
+            font-size: 1rem;
+            color: #cccccc;
+        }
+        pre {
+            color: white;
+            font-size: 24px;
+            font-family: monospace;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+        p {
+            color: white;
+            font-size: 24px;
+            font-family: monospace;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+    img {
+        width: 200px;
+        height: auto;
+        
+        display: block;
+        margin-bottom: 5px;
+        border-radius: 8px;
+    }
+      body {
+      background-color: rgb(156, 23, 23);
+      color: white;
+      font-family: Arial, sans-serif;
+    }
+
+    .refresh-button {
+      display: inline-block;
+      padding: 5px;
+      margin: 10px;
+      font-size: 2em;
+      background-color: orange;
+      color: rgb(0, 0, 0);
+      text-decoration: none;
+      border-radius: 5px;
+      margin: 1px;
+    }
+
+    .refresh-button2 {
+      display: inline-block;
+      padding: 5px;
+      margin: 10px;
+      font-size: 2em;
+      background-color: rgb(255, 225, 0);
+      color: rgb(0, 0, 0);
+      text-decoration: none;
+      border-radius: 5px;
+      margin: 1px;
+    }
+
+    .refresh-button3 {
+      display: inline-block;
+      padding: 5px;
+      margin: 10px;
+      font-size: 2em;
+      background-color: blue;
+      color: yellow;
+      text-decoration: none;
+      border-radius: 5px;
+      margin: 1px;
+    }
+
+    .refresh-button:hover {
+      background-color: orange;
+    }
+
+    .sticky {
+      position: -webkit-sticky;
+      position: sticky;
+      top: 0;
+      background-color: orange;
+      padding: 10px 0;
+      z-index: 1000;
+    }
+
+    .video-gallery {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-around;
+    }
+
+    figure {
+      max-width: 300px;
+      margin: 10px;
+      text-align: center;
+    }
+
+    figcaption {
+      margin-top: 8px;
+      /* Keep the same margin */
+      font-size: 1.2vw;
+      /* Set a specific font size */
+      color: #cccccc;
+      /* Consistent color */
+      line-height: 1.5;
+      /* Set a specific line height for consistency */
+      text-align: center;
+      /* Center align if necessary */
+    }
+
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+      background: rgb(156, 23, 23);
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .button {
+      display: inline-block;
+      padding: 10px 20px;
+      margin: 5px;
+      font-size: 23px;
+      color: black;
+      background-color: orange;
+      border: none;
+      border-radius: 5px;
+      text-decoration: none;
+      text-align: center;
+      cursor: pointer;
+    }
+
+    .button:hover {
+      background-color: orange;
+    }
+
+    .round {
+      display: inline-block;
+      padding: 15px 15px 15px 15px;
+      min-width: 1vw;
+      min-height: 1vw;
+      font-size: 18px;
+      color: black;
+      background-color: red;
+      border: 2px black solid;
+      border-radius: 50%;
+      text-decoration: none;
+      text-align: center;
+      cursor: pointer;
+    }
+    </style>
+</head>
+
+<body style="background-color: rgb(156, 23, 23);">
+    <center>
+        <h1 style="color: orange;">FlaskArchitect's Home index.html</h1>
+  
+        <a href="{{ url_for('mk_novel') }}" class="refresh-button2">Novel</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;      <a href="{{ url_for('mk_videos') }}" class="refresh-button2">Video Processing</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="{{ url_for('clean_storage_route') }}" class="refresh-button2">Image Processing</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="{{ url_for('utilities') }}" class="refresh-button2">Utilities</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="{{ url_for('home2') }}" class="refresh-button2">blog</a><br /><br />
+        <hr>
+        <!--br /><br />
+        <a href="{{ url_for('uploadfile') }}" class="refresh-button"> Segment Image</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        <a href="{{ url_for('clean_archives') }}" class="refresh-button">Clean Archives</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        <a href="{{ url_for('clean_storage_route') }}" class="refresh-button">Clean Movie Sources</a><br /> <br />
+        <a href="{{ url_for('select_mask_image') }}" class="refresh-button">Mask -Choice-</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        <a href="{{ url_for('styling') }}" class="refresh-button">Stylize Images</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        <a href="{{ url_for('mk_mask') }}" class="refresh-button">Custom Mask</a> <br /><br />
+
+        <a href="{{ url_for('rorschach') }}" class="refresh-button2">Create Rorschach</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        <a href="{{ url_for('search_file') }}" class="refresh-button2">App_Search</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        <a href="{{ url_for('outlinefile') }}" class="refresh-button2">Outline Image</a><br /><br />
+        <a href="{{ url_for('start_ffmpeg') }}" class="refresh-button2">Start Recording</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="{{ url_for('balacoon') }}" class="refresh-button2">Balacoon Text to Mp3</a>&nbsp;&nbsp;&nbsp
+        <a href="{{ url_for('stop_ffmpeg') }}" class="refresh-button2">Stop Recording</a>
+
+        <hr>
+        
+        
+        <br /><a style="color:yellow;font-size:2.3em;" href=" {{ url_for('about') }}">About this Application</a>&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
+        <a style="color:white;font-size:2.3em;" href=" {{ url_for('edit_description') }}" class="refresh-button">Edit 'About this Application' page.</a><br/><br/><hr><br/><br/>
+        <a href="{{ url_for('moviepy_route') }}" class="refresh-button">View Moviepy Info</a>&nbsp;&nbsp;
+        <a href="{{ url_for('flask_info_route') }}" class="refresh-button">View Flask import Info</a><br/><br/>
+        <a href="{{ url_for('all_html') }}" class="refresh-button">View all_html</a>&nbsp;&nbsp;
+        <a href="{{ url_for('all_code') }}" class="refresh-button">View allCode</a><br/><br/>
+        <a href="{{ url_for('PIL_info_route') }}" class="refresh-button">View PIL import Info</a>&nbsp;&nbsp;
+        <a href="{{ url_for('moviepy_fx_route') }}" class="refresh-button">View moviepy_fx import Info</a><br/><br/> 
+
+        <a href="{{ url_for('text_mp3') }}" class="refresh-button">Text to mp3</a>&nbsp;&nbsp;
+        <a href="{{ url_for('create_text_file') }}" class="refresh-button">Create a Text File</a>&nbsp;&nbsp;
+        <a href="{{ url_for('mp3_upload') }}" class="refresh-button">Upload an MP3</a><br/><br/>
+        <a href="/add_sound_image" class="refresh-button">Go to Add Sound to Image Form</a>&nbsp;&nbsp;
+        <a href="/copy" class="refresh-button">Copy Images to Resources</a>
+        <a href="{{ url_for('sound_2_video') }}" class="refresh-button">Add mp3 to Video</a><br/><br/>
+        <a href="{{ url_for('search_templates_route') }}" class="refresh-button">Search templates </a><br/><br/>
+        <a href="{{ url_for('search_history') }}" class="refresh-button">View Search History</a><br/><br/>
+
+   <ul>
+            <li><a href="{{ url_for('edit_html') }}" class="refresh-button">Edit Html Files</a></li>
+            <li><a href="{{ url_for('file_home') }}" class="refresh-button">File Manager Home</a></li>
+            <li><a href="{{ url_for('file_manager', directory='static') }}"class="refresh-button">Manage Static Files</a></li>
+            <li><a href="{{ url_for('file_manager', directory='templates') }}"class="refresh-button">Manage Templates</a></li>
+        </ul>
+
+    <a href="{{ url_for('edit_post', post_id=864) }}" class="refresh-button">Edit Post Below</a>
+</center-->
+<h3>Video Gallery</h3>
+<!-- Include the menu -->
+    {% include 'video_menu.html' %}
+
+
+ <hr>
+ <h3>Video Gallery End</h3>
+</center>
+
+</body>
+</html>

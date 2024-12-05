@@ -1,0 +1,31 @@
+<-- im_on_mp4.html-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Select Video and Image</title>
+</head>
+<body>
+    <h1>Select Video and Image</h1>
+    <form action="/merge_video_background" method="POST">
+        <label for="video_file">Select Video (from static/temp_exp):</label>
+        <select name="video_file" id="video_file">
+            {% for video in video_files %}
+                <option value="{{ video }}">{{ video }}</option>
+            {% endfor %}
+        </select>
+        <br><br>
+
+        <label for="image_file">Select Image (from static/resources_store):</label>
+        <select name="image_file" id="image_file">
+            {% for image in image_files %}
+                <option value="{{ image }}">{{ image }}</option>
+            {% endfor %}
+        </select>
+        <br><br>
+
+        <button type="submit">Merge Video and Image</button>
+    </form>
+</body>
+</html>

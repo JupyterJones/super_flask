@@ -1,0 +1,170 @@
+<!-- crop_archieve_image.html -->
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Crop Archive Image</title>
+        <link rel="stylesheet" href="{{ url_for('static', filename='dark.css') }}">
+  <style>
+    body {
+    background-color: #2C2C2C;
+    color: white;
+    font-family: Arial, sans-serif;
+}
+
+/* Button Styling */
+.refresh-button, .refresh-button2 {
+    display: inline-block;
+    padding: 5px;
+    margin: 10px 1px;
+    font-size: 1em;
+    color: rgb(0, 0, 0);
+    text-decoration: none;
+    border-radius: 5px;
+}
+
+.refresh-button {
+    background-color: orange;
+}
+
+.refresh-button2 {
+    background-color: rgb(255, 225, 0);
+}
+
+.refresh-button:hover, .refresh-button2:hover {
+    background-color: orange;
+}
+
+/* Sticky Header */
+.sticky {
+    position: sticky;
+    top: 0;
+    background-color: orange;
+    padding: 10px 0;
+    z-index: 1000;
+    text-align: center !important;
+    width: 100% !important;
+    height: 200px;
+}
+
+/* Video Gallery */
+.video-gallery {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
+}
+
+/* Figure Styling */
+figure {
+    max-width: 300px;
+    margin: 10px;
+    text-align: center;
+}
+
+figcaption {
+    margin-top: 8px;
+    font-size: 1rem;
+    color: #cccccc;
+}
+
+/* Text Styling */
+pre, p {
+    color: white;
+    font-size: 24px;
+    font-family: monospace;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+}
+
+/* Image Styling */
+img {
+    width: 200px;
+    height: auto;
+    display: block;
+    margin-bottom: 5px;
+    border-radius: 8px;
+}
+
+/* Link Styling */
+a {
+    color: red;
+    font-size: 24px;
+    text-decoration: none;
+}
+
+/* Highlighted Span */
+span {
+    background-color: yellow;
+    color: black;
+    padding: 2px;
+    border-radius: 5px;
+    font-size: 1em;
+}
+
+/* Video Display */
+.video-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+.video-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    max-width: 420px;
+    margin: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    padding: 10px;
+    background-color: rgba(170, 160, 150, 0.5);
+    border-radius: 5px;
+}
+
+video {
+    width: 20%;
+    height: auto;
+}
+
+/* Container for Centering */
+.vid_container {
+    width: 20%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+</style>
+   
+
+</head>
+<body>
+    <h1>Select an Image to Crop</h1>
+    <a class="refresh-button" href="{{ url_for('img_processing_route') }}">Image Processing</a>
+    {{ new_image }}
+    <hr>
+
+ <!-- Crop Form -->
+<form action="{{ url_for('crop_store_image') }}" method="post" enctype="multipart/form-data">
+    <p><label for="size">Size (width,height):</label></p>
+    <input type="text" name="size" value="512,768"> <!-- Added quotes around default value -->
+
+    <p><label for="pos">Position (left,top,right,bottom):</label></p>
+    <input type="text" name="pos" value="120,10,400,500"> <!-- Added quotes around default value -->
+    <p>Select Image:</p><br/>
+    <div class="video-gallery">
+
+    {% for image in images %}
+    <div class= "video-item">
+        <label>
+            <img src="{{ url_for('static', filename=image.split('static/')[-1]) }}" alt="{{ image }}" width="150"><br/>
+            <input type="radio" name="image" value="{{ image }}"> {{ image[30:-4] }}
+        </label>
+    </div>
+    {% endfor %}
+</div>
+    <p><input type="submit" value="Crop"></p>
+</form>
+
+</body>
+</html>
