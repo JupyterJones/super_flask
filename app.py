@@ -4958,8 +4958,10 @@ video_output = os.path.join(video_folder, '515x768.mp4')
 # Ensure necessary directories exist
 os.makedirs(temp_folder, exist_ok=True)
 os.makedirs(video_folder, exist_ok=True)
-
-
+os.makedirs(square_folder, exist_ok=True)
+os.makedirs(square_folder, exist_ok=True)
+audiofiles = 'static/voice'
+os.makedirs(audiofiles, exist_ok=True)
 # Step 1: Resize images to 512x512
 def resize_square_images():
     #for filename in os.listdir(square_folder):
@@ -5884,6 +5886,8 @@ def get_balacoon_audio_files():
     return audio_files  
 
 def get_balacoon_image_files():
+    if not os.path.exists('static/square'):
+        os.makedirs('static/square')
     #image_files=glob.glob("static/novel_images/*.jpg")
     image_files=glob.glob("static/square/*.jpg")+glob.glob("static/square/*.png")
     # sort by creation date in descending order
@@ -5934,6 +5938,10 @@ def combine_b_video_audio():
         return jsonify({'error': str(e)}), 500
 @app.route('/combine_h', methods=['POST'])
 def combine_h_video_audio():
+
+    if not os.path.exists('static/temp_image'):
+        os.makedirs('static/temp_image')
+
     image_file = request.form.get('image_path')
     audio_file = request.form.get('audio_path')
     print(f"Received request to combine image: {image_file} and audio: {audio_file}")
@@ -7589,6 +7597,9 @@ def add_novel_text():
         draw.text(position, text, font=font, fill=color)
 
         # Save the temporary image for preview
+        #if directory 'static/temp_image/' create
+        if not os.path.exists('static/temp_image'):
+            os.makedirs('static/temp_image')
         temp_image_path = os.path.join('static/temp_image', 'temp-image.png')
         image=image.convert('RGB')
         image.save(temp_image_path)
@@ -9013,7 +9024,9 @@ def image_upload():
         # If no file is selected
         if file.filename == '':
             return 'No file selected', 400
-        
+        #if 'static/text2audio3' create it
+        if not os.path.exists('static/text2audio3'):
+            os.makedirs('static/text2audio3')
         # If the file is allowed
         if file and allowed_file(file.filename):
             image_file = os.path.join(app.config['UPLOAD_FOLDER'], 'TEMP.jpg')
@@ -9758,8 +9771,8 @@ if __name__ == "__main__":
         print("Log file cleared.")
     except: pass
     '''
-    #directory = 'static/TEXT'
-    #load_txt_files(directory)
+    directory = 'static/TEXT'
+    load_txt_files(directory)
     app.run(debug=True, host='0.0.0.0', port=5000)
 
     '''

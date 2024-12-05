@@ -211,7 +211,21 @@
 }
 
     </style>
- 
+ <script>
+    function confirmAction(event, url) {
+        // Prevent the default link action
+        event.preventDefault();
+        
+        // Show a confirmation dialog
+        const userConfirmed = confirm("Are you sure you want to proceed?");
+        
+        // If the user confirmed, navigate to the link
+        if (userConfirmed) {
+            window.location.href = url;
+        }
+    }
+</script>
+
 <div class="video-gallery">
       <figure>
         <video width="300" height="auto" controls>

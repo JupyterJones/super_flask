@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zoom and Pan Animation</title>
+</head>
+<body>  
+    <h1>Zoom and Pan Animation Creator</h1>
+    <!-- link to home -->
+    <a href="/">Home</a>
+    <form id="animationForm">
+        <label for="image_choice">Choose an image:</label>
+        <select name="image" id="image_choice" required onchange="updateImageDisplay()">
+            {% for image in images %}
+                <option value="{{ image }}">{{ image }}</option>
+            {% endfor %}
+        </select>
+
+
+        <label for="animationData">Animation Data (JSON):</label>
+        <textarea style="font-size:28px;" id="animationData" name="animationData" rows="20" cols="80">{{ default_animation_data | safe }}</textarea><br>
+        <button type="submit">Create Animation</button>
+    </form>
+    
+    <img id="selectedImage" src="{{ url_for('static', filename='archived-store/' + images[0]) }}" alt="Selected Image" />
+    <video id="video" controls>
+        <source src="static/temp_exp/final_zoomyyX.mp4" type="video/mp4">
+            </video>
+    <div id="result"></div>
+
+    <script>
+        // Check if default data is properly formatted
+        try {
+            const animationData = JSON.parse(document.getElementById('animationData').value);
+            if (!Array.isArray(animationData)) {
+                throw new Error("Invalid default animation data format");
+            }
+        } catch (error) {
+            console.error('Error in parsing default animation data:', error);
+            document.getElementById('animationData').value = JSON.stringify([]);
+        }
+
+        function updateImageDisplay() {
+            const selectedImage = document.getElementById('image_choice').value;
+            document.getElementById('selectedImage').src = "{{ url_for('static', filename='archived-store/') }}" + selectedImage;
+        }
+
+        document.getElementById('animationForm').addEventListener('submit', function (e) {
+            e.preventDefault();
+            try {
+                const animationData = document.getElementById('animationData').value.trim();
+                const selectedImage = document.getElementById('image_choice').value;
+
+                fetch('/create_animation', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ image: selectedImage, animation_data: JSON.parse(animationData) })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.error) {
+                        throw new Error(data.error);
+                    }
+                    document.getElementById('result').innerText = data.message + ' Video path: ' + data.video_path;
+                })
+                .catch(error => {
+                    document.getElementById('result').innerText = 'Error: ' + error.message;
+                });
+            } catch (error) {
+                document.getElementById('result').innerText = 'Error in form submission: ' + error.message;
+            }
+        });
+
+        // Initialize image display on page load
+        window.onload = updateImageDisplay;
+    </script>
+
+</body>
+</html>

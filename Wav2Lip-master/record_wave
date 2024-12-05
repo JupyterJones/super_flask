@@ -1,0 +1,3 @@
+arecord sample_data/use.wav
+#play sample_data/use.wav
+	

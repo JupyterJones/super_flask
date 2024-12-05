@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Add Caption</title>
+    
+<style>
+        body {
+            background-color: #2C2C2C;
+            color: white;
+            font-family: Arial, sans-serif;
+        }
+
+        .refresh-button {
+            display: inline-block;
+            padding: 5px;
+            margin: 10px;
+            font-size: 2em;
+            background-color: orange;
+            color: rgb(0, 0, 0);
+            text-decoration: none;
+            border-radius: 5px;
+            margin: 1px;
+        }
+
+        .refresh-button2 {
+            display: inline-block;
+            padding: 5px;
+            margin: 10px;
+            font-size: 2em;
+            background-color: rgb(255, 225, 0);
+            color: rgb(0, 0, 0);
+            text-decoration: none;
+            border-radius: 5px;
+            margin: 1px;
+        }
+
+        .refresh-button3 {
+            display: inline-block;
+            padding: 5px;
+            margin: 10px;
+            font-size: 2em;
+            background-color: blue;
+            color: yellow;
+            text-decoration: none;
+            border-radius: 5px;
+            margin: 1px;
+        }
+
+        .refresh-button:hover {
+            background-color: orange;
+        }
+
+        .sticky {
+            position: -webkit-sticky;
+            position: sticky;
+            top: 0;
+            background-color: orange;
+            padding: 10px 0;
+            z-index: 1000;
+        }
+
+        .video-gallery {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-around;
+        }
+
+        figure {
+            max-width: 300px;
+            margin: 10px;
+            text-align: center;
+        }
+
+        figcaption {
+            margin-top: 8px;
+            font-size: 1rem;
+            color: #cccccc;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: rgb(156, 23, 23);
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .button {
+            display: inline-block;
+            padding: 10px 20px;
+            margin: 5px;
+            font-size: 23px;
+            color: black;
+            background-color: orange;
+            border: none;
+            border-radius: 5px;
+            text-decoration: none;
+            text-align: center;
+            cursor: pointer;
+        }
+        .button:hover {
+            background-color: orange;
+        }
+        .round {
+            display: inline-block;
+            padding: 15px 15px 15px 15px;
+            min-width: 1vw;
+            min-height: 1vw;
+            font-size: 24px;
+            font-weight:bold;
+            color: black;
+            background-color: green;
+            border: 2px black solid;
+            border-radius: 50%;
+            text-decoration: none;
+            text-align: center;
+            cursor: pointer;
+        }
+        .round:hover {
+            background-color: red;
+        }
+
+      .media-container {
+        display: flex;
+        flex-wrap: wrap;
+        margin: 20px 0; /* Spacing above and below the section */
+      }
+
+      .media-item {
+        margin: 10px; /* Spacing between items */
+        padding: 10px;
+        border: 1px solid #ccc; /* Optional: for visibility */
+        border-radius: 8px; /* Optional: rounded corners */
+        width: calc(25% - 20px); /* Adjust for responsive layout */
+        box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1); /* Optional: adds shadow effect */
+        text-align: center; /* Centering text */
+      }
+      .mediaitem {
+        margin: 10px; /* Spacing between items */
+        padding: 10px;
+        border: 1px solid #ccc; /* Optional: for visibility */
+        border-radius: 8px; /* Optional: rounded corners */
+        width: calc(20% - 20px); /* Adjust for responsive layout */
+        box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1); /* Optional: adds shadow effect */
+        text-align: center; /* Centering text */
+      }
+      button {
+        padding: 10px 15px; /* Consistent padding */
+        font-size: 2.6vw; /* Better sizing */
+        cursor: pointer;
+        margin-bottom: 5px; /* Space below button */
+      }
+
+      .audio-label {
+        display: block; /* Set to block for better spacing */
+        margin-top: 5px; /* Add some space above the label */
+        color: orange; /* Add color */
+        word-wrap: break-word; /* Wrap text if too long */
+      }
+      video {
+        width: 250px;
+        height: auto;
+      }
+      img {
+        width: 75%;
+        height: auto;
+          
+      }
+      a{
+         font-size:3vw;
+         color: orange;
+      }
+    </style>
+    
+</head>
+<body>
+    <h1>Upload Image and Add Caption / add_novel_caption.html </h1>
+<a href ="{{ url_for('mk_novel') }}">mk novel home</a><br />
+<a href ="{{ url_for('clean_storage_route') }}">View and delete some of these files</a><br /><br />
+    <form action="{{ url_for('add_caption') }}" method="post">
+        <div class="form-group">
+            <label for="caption" style="font-size:3vw;" >Enter Caption:</label>
+<textarea name="caption" id="caption" required rows="10" cols="70" placeholder="Enter your caption here"></textarea><br />
+        </div>
+<div class="form-group">
+            <label for="offset" style="font-size:3vw;">Offset Height (default: 20):</label>
+            <input style="font-size:3vw;" type="number" name="offset" id="offset" value="20" min="0" placeholder="Enter offset in pixels">
+
+            <label for="alpha" style="font-size:3vw;">Background Opacity (default: 155):</label>
+            <input style="font-size:3vw;" type="number" name="alpha" id="alpha" value="155" min="0" placeholder="Enter Alpha 50-255">
+        </div>
+        {% if images %}
+        <h2>Select an Image</h2>
+        <div class="media-container">
+            {% for image in images %}
+            <div class="media-item">
+                <input
+                    type="radio"
+                    name="selected_image"
+                    id="image_{{ loop.index }}"
+                    value="{{ image }}"
+                    required
+                />
+                <label for="image_{{ loop.index }}">
+                    <img src="{{ url_for('static', filename='novel_images/' + image) }}" alt="{{ image }}">
+                    <div>{{ image[22:-4] }}</div>
+                </label>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <button type="submit">Add Caption</button>
+    </form>
+</div>
+
+    <hr>
+    <img src="{{ url_for('static', filename='novel_images/captioned.jpg') }}" alt="captioned">
+    </body>
+</html>
